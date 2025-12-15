@@ -57,3 +57,6 @@ credentials.json
 *.h5
 *.hdf5
 *.model
+
+# Generated PDFs
+docs/*.pdf
