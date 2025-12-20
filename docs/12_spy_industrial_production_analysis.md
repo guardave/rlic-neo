@@ -115,6 +115,18 @@ SPY monthly returns segmented by Industrial Production regimes:
 
 **Note**: The difference between IP Rising and IP Falling regimes is NOT statistically significant. The recession indicator provides clearer regime differentiation.
 
+## Visualizations
+
+### Full Timeline with Regime Background
+
+![SPY Price with Industrial Production Regime Background](../data/spy_ip_regime_background.png)
+
+*Green = IP Rising (YoY > 0), Pink = IP Falling (YoY < 0), Gray = Recession*
+
+### Validated Examples
+
+![SPY vs IP Regime Examples](../data/spy_ip_regime_examples.png)
+
 ## Validated Visual Examples
 
 ### Example 1: 1995-1999 Bull Market (IP Rising)

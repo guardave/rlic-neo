@@ -121,6 +121,26 @@ SPY monthly returns segmented by RETAILIRSA regimes:
 - **Expansion + Rising**: Mean +1.05%, Sharpe 0.89
 - **Recession**: Mean -1.36%, Sharpe -0.64 (worst regime)
 
+## Visualizations
+
+### Full Timeline with Regime Background
+
+![SPY Price with RETAILIRSA Regime Background](../data/spy_retailirsa_regime_background.png)
+
+*Green = Falling Inventories (YoY < 0), Pink = Rising Inventories (YoY > 0), Gray = Recession*
+
+### Validated Examples
+
+![SPY vs RETAILIRSA Regime Examples](../data/spy_retailirsa_regime_examples.png)
+
+### Correlation Evidence
+
+![SPY vs RETAILIRSA Correlation](../data/spy_retailirsa_correlation.png)
+
+### Lead-Lag Analysis
+
+![SPY vs RETAILIRSA Lead-Lag](../data/spy_retailirsa_leadlag.png)
+
 ## Economic Interpretation
 
 ### Why the Inverse Relationship?

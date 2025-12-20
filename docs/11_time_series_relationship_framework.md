@@ -425,6 +425,65 @@ Even without predictive power, regime analysis is valuable:
 4. **Regime Background**: Target series with regime colors as background
 5. **Box Plot by Regime**: Distribution of target in each regime
 
+### 7.1.1 Embedding Images in Documentation
+
+**Always embed generated visualizations in analysis documents using markdown syntax:**
+
+```markdown
+![Alt text description](../data/filename.png)
+
+*Caption explaining what the visualization shows*
+```
+
+**Best Practices for Image Embedding:**
+
+| Practice | Description |
+|----------|-------------|
+| **Use relative paths** | `../data/image.png` from docs folder |
+| **Add alt text** | Describes the image for accessibility |
+| **Include caption** | Explains colors, axes, key takeaways |
+| **Save to data folder** | Keep visualizations with data artifacts |
+| **Use descriptive filenames** | `spy_ip_regime_background.png` not `fig1.png` |
+
+**Standard Image Naming Convention:**
+```
+{target}_{indicator}_{plot_type}.png
+
+Examples:
+- spy_ip_regime_background.png      # Full timeline with regime colors
+- spy_ip_regime_examples.png        # Validated example subplots
+- spy_retailirsa_correlation.png    # Scatter plot with correlation
+- spy_retailirsa_leadlag.png        # Lead-lag analysis plot
+```
+
+**Example Document Structure with Embedded Images:**
+
+```markdown
+## Visualizations
+
+### Full Timeline with Regime Background
+
+![SPY Price with IP Regime Background](../data/spy_ip_regime_background.png)
+
+*Green = IP Rising (YoY > 0), Pink = IP Falling (YoY < 0), Gray = Recession*
+
+### Validated Examples
+
+![SPY vs IP Regime Examples](../data/spy_ip_regime_examples.png)
+
+The four panels show:
+1. Bull market with IP Rising regime
+2. Recession with negative returns
+3. Recovery period with IP Rising
+4. Counter-example: positive returns despite falling IP
+```
+
+**Benefits of Embedded Images:**
+1. **Self-contained documentation** - Readers see visuals alongside analysis
+2. **Version control** - Images tracked with code in git
+3. **Reproducibility** - Clear link between analysis and output
+4. **PDF export** - Most markdown renderers include images in exports
+
 ### 7.2 Annotated Examples - CRITICAL PRACTICE
 
 **IMPORTANT: Example Selection and Validation**
