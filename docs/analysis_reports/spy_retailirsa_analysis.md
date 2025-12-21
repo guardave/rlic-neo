@@ -6,6 +6,84 @@ This analysis explores the relationship between S&P 500 (SPY) price/returns and 
 
 **Data Period**: January 1993 to September 2025 (393 months)
 
+---
+
+## Qualitative Analysis: Understanding RETAILIRSA
+
+### What is the Retail Inventories-to-Sales Ratio?
+
+The Retail Inventories-to-Sales Ratio (RETAILIRSA) measures the relationship between end-of-month inventory values and monthly sales for retail businesses. Published monthly by the U.S. Census Bureau and available through [FRED](https://fred.stlouisfed.org/series/RETAILIRSA), it indicates how many months of inventory retailers are holding relative to their sales rate.
+
+**Key Characteristics:**
+- **Formula**: Inventory Level / Net Sales
+- **Interpretation**: A ratio of 1.5 means retailers hold 1.5 months of inventory relative to sales
+- **Historical Range**: Record high of 1.75 (April 1995), record low of 1.09 (June 2021)
+- **Current Median**: ~1.49
+- **Release Timing**: Mid-month, approximately 6 weeks after the reference month
+
+### Market Interpretation and Usage
+
+#### Economic Signal Interpretation
+
+According to [FRED data analysis](https://fred.stlouisfed.org/series/RETAILIRSA) and [TradingView](https://www.tradingview.com/symbols/FRED-RETAILIRSA/):
+
+| Ratio Level | Interpretation |
+|-------------|----------------|
+| **Rising** | Retailers overstocked; demand weakening; potential economic slowdown |
+| **Falling** | Strong consumer demand; supply constraints; economic strength |
+| **High (>1.5)** | Excess inventory; potential markdowns; margin pressure |
+| **Low (<1.3)** | Lean inventory; supply chain stress or strong demand |
+
+#### The Bullwhip Effect Connection
+
+The ratio is closely tied to the [bullwhip effect](https://sloanreview.mit.edu/article/the-bullwhip-effect-in-supply-chains/) - a supply chain phenomenon documented by MIT Sloan where small changes in consumer demand create amplified swings upstream:
+
+> "When businesses notice signs of an impending recession, such as rising inflation, interest rate hikes, and a slowdown in consumer spending, the bullwhip effect may be close behind." - [TrueCommerce](https://www.truecommerce.com/blog/how-recessions-create-a-bullwhip-effect/)
+
+The [Supply Chain Management Review](https://www.scmr.com/article/current-inventory-dynamics-arent-the-bullwhip-effect) notes that the "inventory accelerator" concept explains why "when demand decreases, the decline in orders is larger than the decline in sales as firms attempt to reduce their inventory levels."
+
+#### Role as a Recession Indicator
+
+[NetSuite's recession indicators guide](https://www.netsuite.com/portal/resource/articles/business-strategy/recession-indicators.shtml) identifies inventory levels as a relatively consistent recession signal:
+
+> "In the past three recessions, Total Business Inventories reached 12-, 24-, and 36-month highs within 6 months of the recession's official start."
+
+The self-reinforcing cycle is clear: reduced consumer confidence → lower spending → rising inventories → production cuts → job losses → further confidence decline.
+
+#### Recent Market Events
+
+**2020-2021 Supply Chain Crisis**: The record low of 1.09 in June 2021 reflected unprecedented supply chain disruptions combined with stimulus-fueled demand. [CNBC reported](https://www.cnbc.com/2022/05/24/what-retail-inventory-misses-markdowns-say-about-fighting-inflation.html) on how retail inventory misses and subsequent markdowns signaled the market's inflation dynamics.
+
+**2022-2023 Inventory Correction**: As documented by [Tilley Distribution](https://www.tilleydistribution.com/insights/inventory-levels-economic-indicator-or-not/), retailers faced an inventory glut after over-ordering during supply shortages, leading to aggressive discounting and margin pressure.
+
+### Key Insights from Literature
+
+| Finding | Source | Implication |
+|---------|--------|-------------|
+| Rising inventories precede recessions | NetSuite, FocusEconomics | Early warning signal |
+| Ratio spikes within 6 months of recession | Historical analysis | Useful for timing |
+| Bullwhip effect amplifies small demand changes | MIT Sloan | Explains volatility |
+| Record low in 2021 was anomaly | FRED historical data | Context matters |
+| Consumer spending drives inventory cycles | Morningstar | Demand is key driver |
+
+#### Academic and Professional Research
+
+- [Rosenberg Research](https://www.rosenbergresearch.com/2024/04/22/unveiling-recession-leading-indicators/) identifies inventory dynamics as one of their key recession-leading indicators
+
+- [Advisor Perspectives](https://www.advisorperspectives.com/dshort/updates/2025/11/25/the-big-four-recession-indicators) tracks inventory-related metrics as part of recession monitoring
+
+- [FocusEconomics](https://www.focus-economics.com/blog/economic-indicators-for-recession/) notes that "short-term changes in business inventories can indicate shifts in production and demand and forecast market upturns or downswings"
+
+### Limitations as a Stock Market Indicator
+
+1. **Publication Lag**: Data released ~6 weeks after month-end; markets have moved
+2. **Sector-Specific**: Retail represents portion of economy; doesn't capture services
+3. **Supply Chain Complexity**: Global supply chains complicate interpretation
+4. **Structural Changes**: E-commerce and just-in-time practices have lowered "normal" ratios
+5. **COVID Distortions**: 2020-2022 created unprecedented volatility in the series
+
+---
+
 ## Key Findings Summary
 
 ### 1. Strong Inverse Level Relationship
@@ -125,21 +203,21 @@ SPY monthly returns segmented by RETAILIRSA regimes:
 
 ### Full Timeline with Regime Background
 
-![SPY Price with RETAILIRSA Regime Background](../data/spy_retailirsa_regime_background.png)
+![SPY Price with RETAILIRSA Regime Background](../../data/spy_retailirsa_regime_background.png)
 
 *Green = Falling Inventories (YoY < 0), Pink = Rising Inventories (YoY > 0), Gray = Recession*
 
 ### Validated Examples
 
-![SPY vs RETAILIRSA Regime Examples](../data/spy_retailirsa_regime_examples.png)
+![SPY vs RETAILIRSA Regime Examples](../../data/spy_retailirsa_regime_examples.png)
 
 ### Correlation Evidence
 
-![SPY vs RETAILIRSA Correlation](../data/spy_retailirsa_correlation.png)
+![SPY vs RETAILIRSA Correlation](../../data/spy_retailirsa_correlation.png)
 
 ### Lead-Lag Analysis
 
-![SPY vs RETAILIRSA Lead-Lag](../data/spy_retailirsa_leadlag.png)
+![SPY vs RETAILIRSA Lead-Lag](../../data/spy_retailirsa_leadlag.png)
 
 ## Economic Interpretation
 
@@ -195,7 +273,11 @@ While RETAILIRSA cannot predict SPY returns directly, it can be useful as:
 |------|-------------|
 | `src/ml/retail_spy_analysis/__init__.py` | Package initialization |
 | `src/ml/retail_spy_analysis/relationship_analysis.py` | Analysis functions |
-| `docs/10_spy_retailirsa_analysis.md` | This document |
+| `data/spy_retailirsa_regime_background.png` | Full timeline with regime colors |
+| `data/spy_retailirsa_regime_examples.png` | Validated example plots |
+| `data/spy_retailirsa_correlation.png` | Correlation scatter plot |
+| `data/spy_retailirsa_leadlag.png` | Lead-lag analysis plot |
+| `docs/analysis_reports/spy_retailirsa_analysis.md` | This document |
 
 ## Conclusion
 

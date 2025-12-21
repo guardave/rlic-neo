@@ -10,6 +10,11 @@ This document provides a generalized framework for analyzing relationships betwe
 ┌─────────────────────────────────────────────────────────────────┐
 │                    RELATIONSHIP ANALYSIS                        │
 ├─────────────────────────────────────────────────────────────────┤
+│  0. QUALITATIVE ANALYSIS (NEW - DO FIRST)                       │
+│     ├── Literature review (academic, professional, public)      │
+│     ├── Market interpretation and usage                         │
+│     └── Historical context and recent examples                  │
+├─────────────────────────────────────────────────────────────────┤
 │  1. DATA PREPARATION                                            │
 │     ├── Load raw series                                         │
 │     ├── Create derivatives (MoM, QoQ, YoY, Direction)           │
@@ -45,8 +50,119 @@ This document provides a generalized framework for analyzing relationships betwe
 │     ├── Scatter plots with regression                           │
 │     ├── Regime background coloring                              │
 │     └── Annotated examples                                      │
+├─────────────────────────────────────────────────────────────────┤
+│  8. DOCUMENTATION                                               │
+│     ├── Store in docs/analysis_reports/                         │
+│     ├── Use consistent naming convention                        │
+│     └── Embed visualizations with relative paths                │
 └─────────────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## Step 0: Qualitative Analysis (REQUIRED - Do First)
+
+Before any quantitative analysis, conduct a comprehensive qualitative review. This provides essential context for interpreting results and ensures your analysis aligns with market understanding.
+
+### 0.1 What the Indicator Means
+
+Document the fundamental definition and purpose:
+
+| Aspect | Description |
+|--------|-------------|
+| **Definition** | What does the indicator measure? |
+| **Source** | Who publishes it? (e.g., Federal Reserve, Census Bureau) |
+| **Frequency** | Monthly, weekly, daily? |
+| **Release Timing** | How long after the reference period? |
+| **Historical Range** | Record high, record low, typical values |
+| **Revisions** | Is data revised? How significantly? |
+
+### 0.2 Market Interpretation and Usage
+
+Research how market participants interpret and use the indicator:
+
+**Key Questions to Answer:**
+1. Is it a leading, coincident, or lagging indicator?
+2. What economic conditions does it signal?
+3. How do institutional investors use it?
+4. Is it part of any composite indices (e.g., LEI, CEI)?
+5. What threshold levels are considered significant?
+
+**Example Template:**
+```markdown
+#### How Investors Use [Indicator Name]
+
+1. **Primary Signal**: What does rising/falling indicate?
+2. **Secondary Uses**: Risk assessment, regime identification, etc.
+3. **Combined With**: What other indicators complement this one?
+4. **Caution**: Known limitations or misinterpretations
+```
+
+### 0.3 Literature Review
+
+Conduct a comprehensive review from multiple source types:
+
+#### Academic Research
+Search for peer-reviewed papers examining the indicator's relationship with asset returns:
+- Use Google Scholar, SSRN, JSTOR
+- Look for seminal papers (e.g., Fama for economic indicators)
+- Note methodology and findings
+- Cite with proper hyperlinks
+
+**Example Citations:**
+```markdown
+- **Fama (1981)** in "Stock Returns, Real Activity, Inflation, and Money"
+  established the relationship between stock returns and industrial production
+  ([American Economic Review](https://www.aeaweb.org/))
+
+- **Hong et al.** found industry portfolios can lead the market by up to
+  two months ([NYU Stern Research](https://pages.stern.nyu.edu/))
+```
+
+#### Professional/Institutional Research
+Include analysis from respected financial institutions:
+- Federal Reserve research notes
+- IMF working papers
+- Major bank research (Goldman, JPM, etc.)
+- Financial media analysis (CNBC, Bloomberg)
+
+#### Public Domain Analysis
+Capture recent market commentary and blog analysis:
+- Financial blogs (Advisor Perspectives, Zero Hedge)
+- Social media insights (FinTwit, LinkedIn)
+- Industry publications
+
+### 0.4 Recent Examples
+
+Provide 2-3 recent real-world examples of the indicator in action:
+
+**Example Format:**
+```markdown
+**2020-2021 [Event Name]**: Description of what happened and how the
+indicator behaved. [Source link](https://example.com) documented the
+impact on markets.
+```
+
+### 0.5 Key Insights Summary Table
+
+Consolidate findings in a reference table:
+
+```markdown
+| Finding | Source | Implication for Analysis |
+|---------|--------|--------------------------|
+| Indicator is coincident | NBER | Cannot predict returns directly |
+| Spikes 6 months before recession | Historical data | Useful for regime detection |
+| Relationship unstable over time | Academic paper | Be cautious with backtests |
+```
+
+### 0.6 Limitations to Note
+
+Document known limitations upfront:
+
+1. **Data Issues**: Publication lag, revision frequency
+2. **Coverage**: What the indicator doesn't capture
+3. **Structural Changes**: How the indicator's meaning may have changed
+4. **Recent Anomalies**: COVID, financial crises, etc.
 
 ---
 
@@ -694,6 +810,135 @@ Use it as a **filter** (adjust exposure based on regime) rather than a **signal*
 
 ---
 
+## Step 8: Documentation and Organization
+
+### 8.1 Folder Structure
+
+All analysis reports MUST be stored in a dedicated folder:
+
+```
+docs/
+├── analysis_reports/              # All indicator analysis documents
+│   ├── spy_retailirsa_analysis.md
+│   ├── spy_industrial_production_analysis.md
+│   └── spy_[indicator]_analysis.md
+├── 11_time_series_relationship_framework.md  # This framework
+└── [other docs...]
+```
+
+### 8.2 Naming Convention
+
+Use consistent naming for analysis reports and associated files:
+
+**Report Files:**
+```
+docs/analysis_reports/{target}_{indicator}_analysis.md
+
+Examples:
+- spy_retailirsa_analysis.md
+- spy_industrial_production_analysis.md
+- spy_cpi_analysis.md
+```
+
+**Visualization Files:**
+```
+data/{target}_{indicator}_{plot_type}.png
+
+Examples:
+- spy_ip_regime_background.png      # Full timeline with regime colors
+- spy_ip_regime_examples.png        # Validated example subplots
+- spy_retailirsa_correlation.png    # Scatter plot with correlation
+- spy_retailirsa_leadlag.png        # Lead-lag analysis plot
+```
+
+### 8.3 Document Structure
+
+Every analysis report MUST follow this structure:
+
+```markdown
+# {Target} vs {Indicator} Analysis
+
+## Overview
+- Brief description
+- Data period
+
+---
+
+## Qualitative Analysis: Understanding {Indicator}
+### What is {Indicator}?
+### Market Interpretation and Usage
+### Key Insights from Literature
+### Limitations as a Stock Market Indicator
+
+---
+
+## Key Findings Summary
+### 1. Level Relationship
+### 2. Change Relationship
+### 3. Predictive Power
+### 4. Regime-Based Insights
+
+## Detailed Analysis
+### Correlation Matrix
+### Lead-Lag Analysis
+### Granger Causality Tests
+### ML Predictive Model Results
+### Regime Analysis
+
+## Visualizations
+![Embedded images with relative paths](../../data/image.png)
+
+## Validated Visual Examples
+
+## Economic Interpretation
+
+## Practical Applications
+
+## Files Created
+
+## Conclusion
+```
+
+### 8.4 Image Embedding
+
+Embed all visualizations in the analysis document:
+
+```markdown
+## Visualizations
+
+### Full Timeline with Regime Background
+
+![SPY Price with {Indicator} Regime Background](../../data/{target}_{indicator}_regime_background.png)
+
+*Color legend: Green = [regime A], Pink = [regime B], Gray = Recession*
+
+### Validated Examples
+
+![{Target} vs {Indicator} Regime Examples](../../data/{target}_{indicator}_regime_examples.png)
+```
+
+**Note:** Use `../../data/` path from `docs/analysis_reports/` subfolder.
+
+### 8.5 Citation Requirements
+
+All qualitative analysis sections MUST include:
+
+1. **Hyperlinked citations** to source material
+2. **Mix of source types**: Academic, professional, public
+3. **Recent examples** with dates and context
+4. **Summary table** of key findings
+
+**Example Citation Format:**
+```markdown
+According to the [Federal Reserve's analysis](https://www.federalreserve.gov/...),
+this indicator is considered a coincident measure of economic activity.
+
+Research by [Hong et al.](https://pages.stern.nyu.edu/~rengle/...) found that
+industry portfolios can lead the market by up to two months.
+```
+
+---
+
 ## Reusable Code Location
 
 All analysis code is available in:
@@ -701,3 +946,11 @@ All analysis code is available in:
 - `src/ml/retail_spy_analysis/visualizations.py` - Plotting functions
 
 These can be adapted for any pair of time series.
+
+---
+
+## Complete Analysis Reports
+
+Completed analyses following this framework:
+- [SPY vs RETAILIRSA Analysis](analysis_reports/spy_retailirsa_analysis.md)
+- [SPY vs Industrial Production Analysis](analysis_reports/spy_industrial_production_analysis.md)
