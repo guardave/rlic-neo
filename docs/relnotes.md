@@ -1,5 +1,73 @@
 # Release Notes - RLIC Enhancement Project
 
+## Session: 2025-12-21
+
+### Features Added
+
+#### Time Series Relationship Analysis Framework
+- **Framework Document** (`docs/11_time_series_relationship_framework.md`)
+  - Step 0: Qualitative Analysis (literature review, market interpretation, citations)
+  - Steps 1-7: Quantitative analysis (correlation, lead-lag, Granger, ML, regime)
+  - Step 8: Documentation and Organization (folder structure, naming conventions)
+  - Example validation process for visualizations
+  - Image embedding best practices
+
+#### SPY vs RETAILIRSA Analysis (`docs/analysis_reports/spy_retailirsa_analysis.md`)
+- Qualitative section with bullwhip effect literature, recession indicators
+- Key finding: Contemporaneous relationship, no predictive power
+- Regime analysis: Falling inventories Sharpe 0.98 vs Rising 0.52
+- Citations: MIT Sloan, FRED, NetSuite, CNBC, Rosenberg Research
+
+#### SPY vs Industrial Production Analysis (`docs/analysis_reports/spy_industrial_production_analysis.md`)
+- Qualitative section with NBER "Big Four" indicators, academic research
+- Key finding: Coincident indicator, no predictive power
+- Regime analysis: IP Rising Sharpe 1.03 vs IP Falling 0.87 (not significant)
+- Citations: Federal Reserve, Chicago Fed, Fama (1981), Hong et al., Conference Board
+
+#### Visualization Improvements
+- Regime background coloring (Green/Pink/Gray)
+- Validated example selection process
+- Standard naming convention: `{target}_{indicator}_{plot_type}.png`
+
+### Key Discoveries
+
+1. **Qualitative analysis should precede quantitative analysis**
+   - Provides context for interpreting statistical results
+   - Identifies known limitations upfront
+   - Aligns findings with market consensus
+
+2. **Both indicators are coincident, not leading**
+   - IP moves with the economy
+   - RETAILIRSA reflects current demand conditions
+   - Stock markets anticipate production changes (reverse causality)
+
+3. **Recession indicator provides strongest signal**
+   - Both analyses show Sharpe -0.64 during recessions
+   - More reliable than indicator direction alone
+
+4. **Example validation is critical**
+   - Must verify data matches visual before writing descriptions
+   - Count regime months, verify dominant regime, check target direction
+
+### Technical Lessons Learned
+
+1. **Literature review sources by type**:
+   - Academic: Google Scholar, SSRN (e.g., Fama, Stock & Watson)
+   - Professional: Federal Reserve notes, Conference Board, IMF
+   - Public: Advisor Perspectives, financial media (CNBC, Bloomberg)
+
+2. **Image paths in nested folders**: Use `../../data/` from `docs/analysis_reports/`
+
+3. **Document organization**: Dedicated folders for analysis reports improve maintainability
+
+### Files Changed
+- Moved: `docs/10_spy_retailirsa_analysis.md` → `docs/analysis_reports/spy_retailirsa_analysis.md`
+- Moved: `docs/12_spy_industrial_production_analysis.md` → `docs/analysis_reports/spy_industrial_production_analysis.md`
+- Updated: `docs/11_time_series_relationship_framework.md` (added Steps 0 and 8)
+- New visualizations: 10 PNG files in `data/`
+
+---
+
 ## Session: 2025-12-15
 
 ### Features Added
