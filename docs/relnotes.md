@@ -1,5 +1,25 @@
 # Release Notes - RLIC Enhancement Project
 
+## Session: 2026-01-03
+
+### Bug Fixes
+
+#### Heatmap Title Inconsistency Fix
+- **Issue**: `plot_sector_heatmap()` had hardcoded "1-month lag" in title
+- **Impact**: Lag=0 heatmap incorrectly displayed "1-month lag" caption
+- **Fix**: Added `lag` parameter to function with dynamic title generation
+- **Result**: Now correctly shows "Lag=0 (Control)" and "Lag=1 (Optimal)"
+
+### Files Changed
+- `script/sector_regime_analysis.py`: Updated `plot_sector_heatmap()` function
+
+### Lessons Learned
+
+1. **Parameterize visualization titles** - When a function generates multiple variants, always pass parameters for dynamic labeling
+2. **Side-by-side comparison methodology** - Control vs Optimal comparison strengthens research validity
+
+---
+
 ## Session: 2025-12-21
 
 ### Features Added
