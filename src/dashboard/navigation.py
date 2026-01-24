@@ -44,13 +44,12 @@ def init_session_state():
         st.session_state.selected_analysis = 'spy_retailirsa'
 
 
-def render_sidebar(show_home: bool = True, current_page: str = None):
+def render_sidebar(current_page: str = None):
     """
     Render the sidebar with navigation controls.
     Streamlit's default page navigation appears at the top automatically.
 
     Args:
-        show_home: Whether to show the home button (False on home page)
         current_page: Current page name (for future use)
 
     Returns:
@@ -59,11 +58,6 @@ def render_sidebar(show_home: bool = True, current_page: str = None):
     init_session_state()
 
     with st.sidebar:
-        # Home button (icon only, not shown on home page)
-        if show_home:
-            if st.button("🏠", use_container_width=True, help="Go to Home"):
-                st.switch_page("app.py")
-
         # Focus analysis selector
         selected = st.selectbox(
             "Focus Analysis",

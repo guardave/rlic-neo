@@ -1,5 +1,5 @@
 """
-Catalog Page - Analysis overview and selection.
+Home Page - Analysis overview and selection.
 """
 
 import streamlit as st
@@ -9,19 +9,20 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.dashboard.navigation import ANALYSES, render_sidebar, render_breadcrumb
+from src.dashboard.navigation import ANALYSES, render_sidebar
 
-st.set_page_config(page_title="Catalog | RLIC", page_icon="📋", layout="wide")
+st.set_page_config(page_title="RLIC Dashboard", page_icon="🏠", layout="wide")
 
-# Sidebar: Home, analysis selector, section links
-render_sidebar(current_page="Catalog")
+# Sidebar: analysis selector
+render_sidebar(current_page="Home")
 
-# Content: Breadcrumb, then page
-render_breadcrumb("Catalog")
-st.title("📋 Analysis Catalog")
+# Main content
+st.title("🏠 RLIC Dashboard")
 
 st.markdown("""
-Browse all available analyses. Click on a card to select and explore.
+Interactive analysis portal for economic indicators and asset returns.
+
+**Select an analysis** in the sidebar or click a card below to explore.
 """)
 
 # Analysis cards in 2x2 grid
