@@ -57,15 +57,6 @@ def render_sidebar(current_page: str = None):
     """
     init_session_state()
 
-    # Hide the "app" link from navigation (it just redirects to Home)
-    st.markdown("""
-        <style>
-        [data-testid="stSidebarNav"] > ul > li:first-child {
-            display: none;
-        }
-        </style>
-    """, unsafe_allow_html=True)
-
     with st.sidebar:
         # Focus analysis selector
         selected = st.selectbox(

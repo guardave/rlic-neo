@@ -1,0 +1,15 @@
+{
+  "analysis_id": "investment_clock",
+  "run_timestamp": "2026-01-24T10:26:05.766819",
+  "data_start": "1999-01-31 00:00:00",
+  "data_end": "2025-12-31 00:00:00",
+  "n_periods": 324,
+  "n_sectors": 10,
+  "phases": {
+    "Overheat": 97,
+    "Reflation": 76,
+    "Unknown": 58,
+    "Recovery": 50,
+    "Stagflation": 43
+  }
+}

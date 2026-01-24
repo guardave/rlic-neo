@@ -1,12 +1,16 @@
 """
-Home Page - Analysis overview and selection.
+RLIC Dashboard - Home Page
+
+Interactive analysis portal for economic indicators and asset returns.
+
+Run with: streamlit run src/dashboard/Home.py
 """
 
 import streamlit as st
 import sys
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
+PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.dashboard.navigation import ANALYSES, render_sidebar

@@ -1,0 +1,20 @@
+{
+  "analysis_id": "spy_indpro",
+  "run_timestamp": "2026-01-24T10:26:59.885480",
+  "data_start": "1990-01-31 00:00:00",
+  "data_end": "2025-12-31 00:00:00",
+  "n_periods": 432,
+  "indicator": "Industrial_Prod",
+  "target": "SPY_return",
+  "correlation_level": -0.05542165589431196,
+  "optimal_lag": -1,
+  "optimal_lag_correlation": 0.21667472294121923,
+  "granger_significant_lags": [
+    5,
+    6
+  ],
+  "strategy_sharpe": 0.9110708949578263,
+  "benchmark_sharpe": 0.7645918120472757,
+  "strategy_total_return": 17.585657088232857,
+  "benchmark_total_return": 27.040929060265018
+}

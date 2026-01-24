@@ -1,0 +1,17 @@
+{
+  "analysis_id": "spy_retailirsa",
+  "run_timestamp": "2026-01-24T10:26:38.659814",
+  "data_start": "1993-01-31 00:00:00",
+  "data_end": "2025-09-30 00:00:00",
+  "n_periods": 393,
+  "indicator": "Retail_Inv_Sales_Ratio",
+  "target": "SPY_return",
+  "correlation_level": -0.032824397650818245,
+  "optimal_lag": -1,
+  "optimal_lag_correlation": -0.21847591441425301,
+  "granger_significant_lags": [],
+  "strategy_sharpe": 0.3176976744061763,
+  "benchmark_sharpe": 0.7628757791035649,
+  "strategy_total_return": 1.3914831351315877,
+  "benchmark_total_return": 26.400119761221188
+}

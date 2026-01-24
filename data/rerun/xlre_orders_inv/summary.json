@@ -1,0 +1,39 @@
+{
+  "analysis_id": "xlre_orders_inv",
+  "run_timestamp": "2026-01-24T10:27:30.839353",
+  "data_start": "2016-10-31 00:00:00",
+  "data_end": "2025-09-30 00:00:00",
+  "n_periods": 108,
+  "indicator": "OI_Ratio",
+  "target": "XLRE_return",
+  "correlation_level": 0.022968818027050905,
+  "optimal_lag": -1,
+  "optimal_lag_correlation": 0.20641354547729912,
+  "granger_significant_lags": [],
+  "strategy_sharpe": 0.13236203544719571,
+  "benchmark_sharpe": 0.48831369313260237,
+  "strategy_total_return": 0.07999261305333327,
+  "benchmark_total_return": 0.8558967525625167,
+  "regime_performance": [
+    {
+      "regime": "Rising",
+      "mean_return": 0.010803258139164027,
+      "std_return": 0.04468882138098974,
+      "sharpe_ratio": 0.8374260679103048,
+      "n_periods": 47,
+      "pct_positive": 0.6170212765957447,
+      "min_return": -0.08627667251815585,
+      "max_return": 0.12477336788326121
+    },
+    {
+      "regime": "Falling",
+      "mean_return": 0.0033446885929339326,
+      "std_return": 0.05507406979926595,
+      "sharpe_ratio": 0.2103774280554383,
+      "n_periods": 56,
+      "pct_positive": 0.6071428571428571,
+      "min_return": -0.15106592570774413,
+      "max_return": 0.10741950329340333
+    }
+  ]
+}
