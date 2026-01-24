@@ -15,6 +15,8 @@ import sys
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
+from src.dashboard.navigation import ANALYSES, init_session_state, render_sidebar
+
 # Page configuration - must be first Streamlit command
 st.set_page_config(
     page_title="RLIC Dashboard",
@@ -38,47 +40,17 @@ st.set_page_config(
     }
 )
 
-# Analysis definitions
-ANALYSES = {
-    'investment_clock': {
-        'name': 'Investment Clock Sectors',
-        'icon': '📈',
-        'short': 'IC Sectors',
-        'description': 'Sector performance across Investment Clock phases'
-    },
-    'spy_retailirsa': {
-        'name': 'SPY vs Retail Inv/Sales',
-        'icon': '🏪',
-        'short': 'SPY-Retail',
-        'description': 'Retail inventory-to-sales ratio vs S&P 500'
-    },
-    'spy_indpro': {
-        'name': 'SPY vs Industrial Production',
-        'icon': '🏭',
-        'short': 'SPY-INDPRO',
-        'description': 'Industrial production vs S&P 500'
-    },
-    'xlre_orders_inv': {
-        'name': 'XLRE vs Orders/Inventories',
-        'icon': '🏠',
-        'short': 'XLRE-O/I',
-        'description': 'Real estate vs manufacturing orders ratio'
-    }
-}
 
-# Session state initialization
-if 'selected_analysis' not in st.session_state:
-    st.session_state.selected_analysis = 'spy_retailirsa'
+def render_home_top_bar():
+    """Render the top bar for home page (no home button needed)."""
+    init_session_state()
 
-
-def render_analysis_selector():
-    """Render the global analysis selector at the top of every page."""
-    # Top bar with analysis selector
+    # Top bar: Analysis Selector (centered)
     col1, col2, col3 = st.columns([1, 2, 1])
 
     with col2:
         selected = st.selectbox(
-            "📊 Focus Analysis",
+            "Focus Analysis",
             options=list(ANALYSES.keys()),
             format_func=lambda x: f"{ANALYSES[x]['icon']} {ANALYSES[x]['name']}",
             index=list(ANALYSES.keys()).index(st.session_state.selected_analysis),
@@ -94,27 +66,14 @@ def render_analysis_selector():
     return st.session_state.selected_analysis
 
 
-def render_sidebar_nav():
-    """Render the sidebar with current analysis info."""
-    analysis_id = st.session_state.selected_analysis
-    analysis = ANALYSES[analysis_id]
-
-    with st.sidebar:
-        # Current analysis header
-        st.markdown(f"## {analysis['icon']} {analysis['short']}")
-        st.caption(analysis['description'])
-        st.markdown("---")
-        st.caption("RLIC Enhancement Project v0.1")
-
-
 def main():
     """Main app entry point - Home page."""
 
-    # Global analysis selector at top
-    render_analysis_selector()
+    # Top bar (no home button on home page)
+    render_home_top_bar()
 
-    # Sidebar navigation
-    render_sidebar_nav()
+    # Sidebar with focus analysis title
+    render_sidebar()
 
     # Main content
     st.title("🏠 RLIC Dashboard")

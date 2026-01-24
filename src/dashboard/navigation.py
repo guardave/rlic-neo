@@ -1,7 +1,10 @@
 """
 Shared navigation components for RLIC Dashboard.
 
-All pages should import and use these functions for consistent navigation.
+Layout:
+- Top pane: Home button | Focus analysis dropdown | Breadcrumb
+- Left pane (sidebar): Focus analysis title (Streamlit handles section links)
+- Right pane: Page content
 """
 
 import streamlit as st
@@ -41,22 +44,28 @@ def init_session_state():
         st.session_state.selected_analysis = 'spy_retailirsa'
 
 
-def render_analysis_selector():
+def render_top_bar(current_page: str = None):
     """
-    Render the global analysis selector at the top of the page.
-    Should be called at the start of every page.
+    Render the top navigation bar.
+
+    Args:
+        current_page: Name of current page for breadcrumb (e.g., "Overview", "Correlation")
 
     Returns:
         str: The selected analysis ID
     """
     init_session_state()
 
-    # Top bar with analysis selector (centered)
+    # Top bar: Home | Analysis Selector | Breadcrumb
     col1, col2, col3 = st.columns([1, 2, 1])
+
+    with col1:
+        if st.button("🏠 Home", use_container_width=True):
+            st.switch_page("app.py")
 
     with col2:
         selected = st.selectbox(
-            "📊 Focus Analysis",
+            "Focus Analysis",
             options=list(ANALYSES.keys()),
             format_func=lambda x: f"{ANALYSES[x]['icon']} {ANALYSES[x]['name']}",
             index=list(ANALYSES.keys()).index(st.session_state.selected_analysis),
@@ -68,29 +77,27 @@ def render_analysis_selector():
             st.session_state.selected_analysis = selected
             st.rerun()
 
+    with col3:
+        if current_page:
+            analysis = ANALYSES[st.session_state.selected_analysis]
+            st.markdown(f"**{analysis['short']}** / {current_page}")
+
     st.markdown("---")
     return st.session_state.selected_analysis
 
 
-def render_sidebar_nav():
+def render_sidebar():
     """
-    Render the sidebar with current analysis info and home button.
-    Should be called after render_analysis_selector().
+    Render the sidebar with focus analysis title.
+    Streamlit's built-in navigation handles section links automatically.
     """
     init_session_state()
 
-    analysis_id = st.session_state.selected_analysis
-    analysis = ANALYSES[analysis_id]
+    analysis = ANALYSES[st.session_state.selected_analysis]
 
     with st.sidebar:
-        # Home button at top of sidebar
-        if st.button("🏠 Home", use_container_width=True):
-            st.switch_page("app.py")
-
-        st.markdown("---")
-
-        # Current analysis header
-        st.markdown(f"## {analysis['icon']} {analysis['short']}")
+        # Focus analysis title
+        st.markdown(f"## {analysis['icon']} {analysis['name']}")
         st.caption(analysis['description'])
         st.markdown("---")
         st.caption("RLIC Enhancement Project v0.1")
@@ -106,3 +113,14 @@ def get_analysis_title():
     """Get a formatted title for the current analysis."""
     analysis = get_current_analysis()
     return f"{analysis['icon']} {analysis['name']}"
+
+
+# Backwards compatibility aliases
+def render_analysis_selector():
+    """Deprecated: Use render_top_bar() instead."""
+    return render_top_bar()
+
+
+def render_sidebar_nav():
+    """Deprecated: Use render_sidebar() instead."""
+    render_sidebar()

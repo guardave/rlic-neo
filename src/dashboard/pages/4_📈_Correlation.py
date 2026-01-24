@@ -9,9 +9,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.dashboard.navigation import (
-    render_analysis_selector, render_sidebar_nav, get_analysis_title
-)
+from src.dashboard.navigation import render_top_bar, render_sidebar, get_analysis_title
 from src.dashboard.components import (
     plot_heatmap, plot_scatter, plot_rolling_correlation, format_number
 )
@@ -23,11 +21,11 @@ from src.dashboard.analysis_engine import (
 
 st.set_page_config(page_title="Correlation | RLIC", page_icon="📈", layout="wide")
 
-# Global analysis selector at top
-analysis_id = render_analysis_selector()
+# Top bar: Home | Analysis Selector | Breadcrumb
+analysis_id = render_top_bar("Correlation")
 
-# Sidebar navigation
-render_sidebar_nav()
+# Sidebar with focus analysis title
+render_sidebar()
 
 # Page title
 st.title(f"📈 Correlation: {get_analysis_title()}")
