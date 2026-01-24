@@ -51,8 +51,12 @@ def render_analysis_selector():
     """
     init_session_state()
 
-    # Top bar with centered analysis selector
-    col1, col2, col3 = st.columns([1, 2, 1])
+    # Top bar with home button and analysis selector
+    col1, col2, col3 = st.columns([1, 3, 1])
+
+    with col1:
+        if st.button("🏠 Home", use_container_width=True):
+            st.switch_page("app.py")
 
     with col2:
         selected = st.selectbox(
@@ -74,7 +78,7 @@ def render_analysis_selector():
 
 def render_sidebar_nav():
     """
-    Render the sidebar with current analysis info and navigation links.
+    Render the sidebar with current analysis info.
     Should be called after render_analysis_selector().
     """
     init_session_state()
@@ -86,20 +90,6 @@ def render_sidebar_nav():
         # Current analysis header
         st.markdown(f"## {analysis['icon']} {analysis['short']}")
         st.caption(analysis['description'])
-        st.markdown("---")
-
-        # Navigation links
-        st.markdown("**Sections**")
-        st.page_link("app.py", label="🏠 Home")
-        st.page_link("pages/1_🏠_Catalog.py", label="📋 Catalog")
-        st.page_link("pages/2_📊_Overview.py", label="📊 Overview")
-        st.page_link("pages/3_📖_Qualitative.py", label="📖 Qualitative")
-        st.page_link("pages/4_📈_Correlation.py", label="📈 Correlation")
-        st.page_link("pages/5_🔄_Lead_Lag.py", label="🔄 Lead-Lag")
-        st.page_link("pages/6_🎯_Regimes.py", label="🎯 Regimes")
-        st.page_link("pages/7_💰_Backtests.py", label="💰 Backtests")
-        st.page_link("pages/8_🔮_Forecasts.py", label="🔮 Forecasts")
-
         st.markdown("---")
         st.caption("RLIC Enhancement Project v0.1")
 
