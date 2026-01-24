@@ -21,8 +21,8 @@ from src.dashboard.analysis_engine import (
 
 st.set_page_config(page_title="Correlation | RLIC", page_icon="📈", layout="wide")
 
-# Sidebar: Home button, analysis selector
-analysis_id = render_sidebar()
+# Sidebar: Home, analysis selector, section links
+analysis_id = render_sidebar(current_page="Correlation")
 
 # Content: Breadcrumb, then page
 render_breadcrumb("Correlation")

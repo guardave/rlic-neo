@@ -13,8 +13,8 @@ from src.dashboard.navigation import ANALYSES, render_sidebar, render_breadcrumb
 
 st.set_page_config(page_title="Catalog | RLIC", page_icon="📋", layout="wide")
 
-# Sidebar: Home button, analysis selector
-render_sidebar()
+# Sidebar: Home, analysis selector, section links
+render_sidebar(current_page="Catalog")
 
 # Content: Breadcrumb, then page
 render_breadcrumb("Catalog")

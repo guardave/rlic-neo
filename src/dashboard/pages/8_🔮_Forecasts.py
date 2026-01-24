@@ -21,8 +21,8 @@ from src.dashboard.analysis_engine import (
 
 st.set_page_config(page_title="Forecasts | RLIC", page_icon="🔮", layout="wide")
 
-# Sidebar: Home button, analysis selector
-analysis_id = render_sidebar()
+# Sidebar: Home, analysis selector, section links
+analysis_id = render_sidebar(current_page="Forecasts")
 
 # Content: Breadcrumb, then page
 render_breadcrumb("Forecasts")
