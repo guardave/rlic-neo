@@ -38,112 +38,145 @@ st.set_page_config(
     }
 )
 
+# Analysis definitions
+ANALYSES = {
+    'investment_clock': {
+        'name': 'Investment Clock Sectors',
+        'icon': '📈',
+        'short': 'IC Sectors',
+        'description': 'Sector performance across Investment Clock phases'
+    },
+    'spy_retailirsa': {
+        'name': 'SPY vs Retail Inv/Sales',
+        'icon': '🏪',
+        'short': 'SPY-Retail',
+        'description': 'Retail inventory-to-sales ratio vs S&P 500'
+    },
+    'spy_indpro': {
+        'name': 'SPY vs Industrial Production',
+        'icon': '🏭',
+        'short': 'SPY-INDPRO',
+        'description': 'Industrial production vs S&P 500'
+    },
+    'xlre_orders_inv': {
+        'name': 'XLRE vs Orders/Inventories',
+        'icon': '🏠',
+        'short': 'XLRE-O/I',
+        'description': 'Real estate vs manufacturing orders ratio'
+    }
+}
+
 # Session state initialization
 if 'selected_analysis' not in st.session_state:
-    st.session_state.selected_analysis = None
-
-if 'analysis_results' not in st.session_state:
-    st.session_state.analysis_results = {}
+    st.session_state.selected_analysis = 'spy_retailirsa'
 
 
-def main():
-    """Main app entry point - redirects to Catalog page."""
+def render_analysis_selector():
+    """Render the global analysis selector at the top of every page."""
+    # Top bar with analysis selector
+    col1, col2, col3 = st.columns([1, 2, 1])
 
-    # Sidebar with navigation info
-    with st.sidebar:
-        st.title("📊 RLIC Dashboard")
-        st.markdown("---")
-        st.markdown("""
-        **Navigation:**
-        - 🏠 **Catalog**: Analysis overview
-        - 📊 **Overview**: Key metrics
-        - 📈 **Correlation**: Relationship analysis
-        - 🔄 **Lead-Lag**: Timing analysis
-        - 🎯 **Regimes**: Phase analysis
-        - 💰 **Backtests**: Strategy testing
-        - 🔮 **Forecasts**: Predictions
-        """)
-
-        st.markdown("---")
-
-        # Analysis selector
-        st.subheader("Select Analysis")
-        analyses = {
-            'investment_clock': 'Investment Clock Sectors',
-            'spy_retailirsa': 'SPY vs Retail Inv/Sales',
-            'spy_indpro': 'SPY vs Industrial Production',
-            'xlre_orders_inv': 'XLRE vs Orders/Inventories'
-        }
-
+    with col2:
         selected = st.selectbox(
-            "Analysis:",
-            options=list(analyses.keys()),
-            format_func=lambda x: analyses[x],
-            key='analysis_selector'
+            "📊 Focus Analysis",
+            options=list(ANALYSES.keys()),
+            format_func=lambda x: f"{ANALYSES[x]['icon']} {ANALYSES[x]['name']}",
+            index=list(ANALYSES.keys()).index(st.session_state.selected_analysis),
+            key='global_analysis_selector',
+            label_visibility="collapsed"
         )
-        st.session_state.selected_analysis = selected
+
+        if selected != st.session_state.selected_analysis:
+            st.session_state.selected_analysis = selected
+            st.rerun()
+
+    st.markdown("---")
+    return st.session_state.selected_analysis
+
+
+def render_sidebar_nav():
+    """Render the sidebar with current analysis and navigation."""
+    analysis_id = st.session_state.selected_analysis
+    analysis = ANALYSES[analysis_id]
+
+    with st.sidebar:
+        # Current analysis header
+        st.markdown(f"## {analysis['icon']} {analysis['short']}")
+        st.caption(analysis['description'])
+        st.markdown("---")
+
+        # Navigation
+        st.markdown("**Sections**")
+        st.page_link("app.py", label="🏠 Home", icon="🏠")
+        st.page_link("pages/1_🏠_Catalog.py", label="📋 Catalog")
+        st.page_link("pages/2_📊_Overview.py", label="📊 Overview")
+        st.page_link("pages/3_📖_Qualitative.py", label="📖 Qualitative")
+        st.page_link("pages/4_📈_Correlation.py", label="📈 Correlation")
+        st.page_link("pages/5_🔄_Lead_Lag.py", label="🔄 Lead-Lag")
+        st.page_link("pages/6_🎯_Regimes.py", label="🎯 Regimes")
+        st.page_link("pages/7_💰_Backtests.py", label="💰 Backtests")
+        st.page_link("pages/8_🔮_Forecasts.py", label="🔮 Forecasts")
 
         st.markdown("---")
         st.caption("RLIC Enhancement Project v0.1")
 
-    # Main content - Welcome page
-    st.title("🏠 Welcome to RLIC Dashboard")
+
+def main():
+    """Main app entry point - Home page."""
+
+    # Global analysis selector at top
+    render_analysis_selector()
+
+    # Sidebar navigation
+    render_sidebar_nav()
+
+    # Main content
+    st.title("🏠 RLIC Dashboard")
 
     st.markdown("""
-    This dashboard provides interactive analysis of economic indicators
-    and their relationship to asset returns, based on the Investment Clock framework.
+    Interactive analysis portal for economic indicators and asset returns.
 
-    ### Available Analyses
-
-    Select an analysis from the sidebar or click on a card below to explore.
+    **Select an analysis above** or click a card below to explore.
     """)
 
-    # Analysis cards
+    # Analysis cards in 2x2 grid
     col1, col2 = st.columns(2)
 
     with col1:
+        # Investment Clock
         with st.container(border=True):
             st.subheader("📈 Investment Clock Sectors")
-            st.markdown("""
-            Analyze sector performance across Investment Clock phases
-            using Orders/Inventories and PPI as indicators.
-            """)
+            st.markdown("Sector performance across Investment Clock phases using Orders/Inventories and PPI.")
             st.caption("11 Sectors • 4 Phases • Monthly Data")
-            if st.button("Explore →", key="btn_ic"):
+            if st.button("Select & Explore →", key="btn_ic", use_container_width=True):
                 st.session_state.selected_analysis = 'investment_clock'
                 st.switch_page("pages/2_📊_Overview.py")
 
+        # SPY vs Retail
         with st.container(border=True):
             st.subheader("🏪 SPY vs Retail Inv/Sales")
-            st.markdown("""
-            Analyze the relationship between retail inventory-to-sales
-            ratio and S&P 500 returns.
-            """)
+            st.markdown("Retail inventory-to-sales ratio and S&P 500 returns relationship.")
             st.caption("RETAILIRSA • SPY • Lead-Lag Analysis")
-            if st.button("Explore →", key="btn_retail"):
+            if st.button("Select & Explore →", key="btn_retail", use_container_width=True):
                 st.session_state.selected_analysis = 'spy_retailirsa'
                 st.switch_page("pages/2_📊_Overview.py")
 
     with col2:
+        # SPY vs INDPRO
         with st.container(border=True):
             st.subheader("🏭 SPY vs Industrial Production")
-            st.markdown("""
-            Analyze the relationship between industrial production
-            and S&P 500 returns.
-            """)
+            st.markdown("Industrial production and S&P 500 returns relationship.")
             st.caption("INDPRO • SPY • Regime Analysis")
-            if st.button("Explore →", key="btn_indpro"):
+            if st.button("Select & Explore →", key="btn_indpro", use_container_width=True):
                 st.session_state.selected_analysis = 'spy_indpro'
                 st.switch_page("pages/2_📊_Overview.py")
 
+        # XLRE vs Orders/Inv
         with st.container(border=True):
             st.subheader("🏠 XLRE vs Orders/Inventories")
-            st.markdown("""
-            Analyze real estate sector performance relative to
-            manufacturing orders-to-inventories ratio.
-            """)
+            st.markdown("Real estate sector vs manufacturing orders-to-inventories ratio.")
             st.caption("Orders/Inv Ratio • XLRE • Backtest")
-            if st.button("Explore →", key="btn_xlre"):
+            if st.button("Select & Explore →", key="btn_xlre", use_container_width=True):
                 st.session_state.selected_analysis = 'xlre_orders_inv'
                 st.switch_page("pages/2_📊_Overview.py")
 

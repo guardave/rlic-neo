@@ -6,34 +6,26 @@ Displays indicator profiles, economic interpretation, and literature references.
 
 import streamlit as st
 import pandas as pd
+import sys
+from pathlib import Path
 
-st.set_page_config(page_title="Qualitative Analysis", page_icon="📖", layout="wide")
+PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
 
-# Get selected analysis from session state
-analysis_id = st.session_state.get('selected_analysis', 'investment_clock')
-
-st.title("📖 Qualitative Analysis")
-
-# Analysis selector
-analysis_options = {
-    'investment_clock': 'Investment Clock Sector Analysis',
-    'spy_retailirsa': 'SPY vs RETAILIRSA',
-    'spy_indpro': 'SPY vs Industrial Production',
-    'xlre_orders_inv': 'XLRE vs Orders/Inventories'
-}
-
-selected = st.selectbox(
-    "Select Analysis",
-    options=list(analysis_options.keys()),
-    format_func=lambda x: analysis_options[x],
-    index=list(analysis_options.keys()).index(analysis_id)
+from src.dashboard.navigation import (
+    render_analysis_selector, render_sidebar_nav, get_analysis_title
 )
 
-if selected != analysis_id:
-    st.session_state['selected_analysis'] = selected
-    st.rerun()
+st.set_page_config(page_title="Qualitative | RLIC", page_icon="📖", layout="wide")
 
-st.divider()
+# Global analysis selector at top
+analysis_id = render_analysis_selector()
+
+# Sidebar navigation
+render_sidebar_nav()
+
+# Page title
+st.title(f"📖 Qualitative: {get_analysis_title()}")
 
 # ============================================================================
 # Qualitative Content for Each Analysis

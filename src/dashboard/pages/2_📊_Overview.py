@@ -9,43 +9,29 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
+from src.dashboard.navigation import (
+    render_analysis_selector, render_sidebar_nav, get_analysis_title
+)
 from src.dashboard.components import (
     plot_timeseries, plot_dual_axis, render_kpi_row,
-    render_regime_badge, format_pct, format_number
+    render_regime_badge, format_pct, format_number, plot_regime_timeline
 )
 from src.dashboard.data_loader import load_analysis_data
 from src.dashboard.analysis_engine import (
     create_derivatives, get_current_regime, define_regimes_direction,
-    backtest_metrics, regime_performance
+    regime_performance
 )
 
 st.set_page_config(page_title="Overview | RLIC", page_icon="📊", layout="wide")
 
-# Get selected analysis
-analysis_id = st.session_state.get('selected_analysis', 'spy_retailirsa')
+# Global analysis selector at top
+analysis_id = render_analysis_selector()
 
-# Analysis titles
-TITLES = {
-    'investment_clock': 'Investment Clock Sectors',
-    'spy_retailirsa': 'SPY vs Retail Inv/Sales (RETAILIRSA)',
-    'spy_indpro': 'SPY vs Industrial Production (INDPRO)',
-    'xlre_orders_inv': 'XLRE vs Orders/Inventories'
-}
+# Sidebar navigation
+render_sidebar_nav()
 
-st.title(f"📊 {TITLES.get(analysis_id, 'Analysis Overview')}")
-
-# Sidebar analysis selector
-with st.sidebar:
-    st.subheader("Analysis")
-    new_analysis = st.selectbox(
-        "Select:",
-        options=list(TITLES.keys()),
-        format_func=lambda x: TITLES[x],
-        index=list(TITLES.keys()).index(analysis_id)
-    )
-    if new_analysis != analysis_id:
-        st.session_state.selected_analysis = new_analysis
-        st.rerun()
+# Page title
+st.title(f"📊 Overview: {get_analysis_title()}")
 
 # Load data
 try:
@@ -153,7 +139,6 @@ try:
 
     # Regime timeline
     st.subheader("Regime History")
-    from src.dashboard.components import plot_regime_timeline
     fig_regime = plot_regime_timeline(data, 'regime', title="Regime Over Time")
     st.plotly_chart(fig_regime, use_container_width=True)
 

@@ -10,6 +10,9 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
+from src.dashboard.navigation import (
+    render_analysis_selector, render_sidebar_nav, get_analysis_title
+)
 from src.dashboard.components import (
     plot_regime_timeline, plot_regime_boxplot, plot_regime_performance_bars,
     render_regime_badge, format_pct, format_number
@@ -22,19 +25,18 @@ from src.dashboard.analysis_engine import (
 
 st.set_page_config(page_title="Regimes | RLIC", page_icon="🎯", layout="wide")
 
-analysis_id = st.session_state.get('selected_analysis', 'spy_retailirsa')
+# Global analysis selector at top
+analysis_id = render_analysis_selector()
 
-TITLES = {
-    'investment_clock': 'Investment Clock Sectors',
-    'spy_retailirsa': 'SPY vs Retail Inv/Sales',
-    'spy_indpro': 'SPY vs Industrial Production',
-    'xlre_orders_inv': 'XLRE vs Orders/Inventories'
-}
+# Sidebar navigation
+render_sidebar_nav()
 
-st.title(f"🎯 Regime Analysis: {TITLES.get(analysis_id, 'Unknown')}")
+# Page title
+st.title(f"🎯 Regimes: {get_analysis_title()}")
 
-# Sidebar settings
+# Settings in sidebar
 with st.sidebar:
+    st.markdown("---")
     st.subheader("Regime Definition")
     regime_method = st.radio(
         "Method",
