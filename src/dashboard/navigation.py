@@ -9,6 +9,7 @@ Layout:
 import streamlit as st
 
 # Analysis definitions - single source of truth
+# Format: "Target vs Indicator" (what we predict vs what predicts it)
 ANALYSES = {
     'investment_clock': {
         'name': 'Investment Clock Sectors',
@@ -20,19 +21,19 @@ ANALYSES = {
         'name': 'SPY vs Retail Inv/Sales',
         'icon': '🏪',
         'short': 'SPY-Retail',
-        'description': 'Retail inventory-to-sales ratio vs S&P 500'
+        'description': 'S&P 500 vs retail inventory-to-sales ratio'
     },
     'spy_indpro': {
         'name': 'SPY vs Industrial Production',
         'icon': '🏭',
         'short': 'SPY-INDPRO',
-        'description': 'Industrial production vs S&P 500'
+        'description': 'S&P 500 vs industrial production index'
     },
     'xlre_orders_inv': {
         'name': 'XLRE vs Orders/Inventories',
         'icon': '🏠',
         'short': 'XLRE-O/I',
-        'description': 'Real estate vs manufacturing orders ratio'
+        'description': 'Real estate sector vs orders-to-inventories ratio'
     }
 }
 
