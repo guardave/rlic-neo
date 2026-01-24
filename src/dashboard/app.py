@@ -15,7 +15,7 @@ import sys
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.dashboard.navigation import ANALYSES, init_session_state, render_sidebar
+from src.dashboard.navigation import render_sidebar
 
 # Page configuration - must be first Streamlit command
 st.set_page_config(
@@ -41,39 +41,11 @@ st.set_page_config(
 )
 
 
-def render_home_top_bar():
-    """Render the top bar for home page (no home button needed)."""
-    init_session_state()
-
-    # Top bar: Analysis Selector (centered)
-    col1, col2, col3 = st.columns([1, 2, 1])
-
-    with col2:
-        selected = st.selectbox(
-            "Focus Analysis",
-            options=list(ANALYSES.keys()),
-            format_func=lambda x: f"{ANALYSES[x]['icon']} {ANALYSES[x]['name']}",
-            index=list(ANALYSES.keys()).index(st.session_state.selected_analysis),
-            key='global_analysis_selector',
-            label_visibility="collapsed"
-        )
-
-        if selected != st.session_state.selected_analysis:
-            st.session_state.selected_analysis = selected
-            st.rerun()
-
-    st.markdown("---")
-    return st.session_state.selected_analysis
-
-
 def main():
     """Main app entry point - Home page."""
 
-    # Top bar (no home button on home page)
-    render_home_top_bar()
-
-    # Sidebar with focus analysis title
-    render_sidebar()
+    # Sidebar (no home button on home page)
+    render_sidebar(show_home=False)
 
     # Main content
     st.title("🏠 RLIC Dashboard")
@@ -81,7 +53,7 @@ def main():
     st.markdown("""
     Interactive analysis portal for economic indicators and asset returns.
 
-    **Select an analysis above** or click a card below to explore.
+    **Select an analysis in the sidebar** or click a card below to explore.
     """)
 
     # Analysis cards in 2x2 grid

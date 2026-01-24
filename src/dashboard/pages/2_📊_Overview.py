@@ -9,7 +9,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.dashboard.navigation import render_top_bar, render_sidebar, get_analysis_title
+from src.dashboard.navigation import render_sidebar, render_breadcrumb, get_analysis_title
 from src.dashboard.components import (
     plot_timeseries, plot_dual_axis, render_kpi_row,
     render_regime_badge, format_pct, format_number, plot_regime_timeline
@@ -22,13 +22,11 @@ from src.dashboard.analysis_engine import (
 
 st.set_page_config(page_title="Overview | RLIC", page_icon="📊", layout="wide")
 
-# Top bar: Home | Analysis Selector | Breadcrumb
-analysis_id = render_top_bar("Overview")
+# Sidebar: Home button, analysis selector
+analysis_id = render_sidebar()
 
-# Sidebar with focus analysis title
-render_sidebar()
-
-# Page title
+# Content: Breadcrumb, then page
+render_breadcrumb("Overview")
 st.title(f"📊 Overview: {get_analysis_title()}")
 
 # Load data

@@ -12,17 +12,15 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.dashboard.navigation import render_top_bar, render_sidebar, get_analysis_title
+from src.dashboard.navigation import render_sidebar, render_breadcrumb, get_analysis_title
 
 st.set_page_config(page_title="Qualitative | RLIC", page_icon="📖", layout="wide")
 
-# Top bar: Home | Analysis Selector | Breadcrumb
-analysis_id = render_top_bar("Qualitative")
+# Sidebar: Home button, analysis selector
+analysis_id = render_sidebar()
 
-# Sidebar with focus analysis title
-render_sidebar()
-
-# Page title
+# Content: Breadcrumb, then page
+render_breadcrumb("Qualitative")
 st.title(f"📖 Qualitative: {get_analysis_title()}")
 
 # ============================================================================
