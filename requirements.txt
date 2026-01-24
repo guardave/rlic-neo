@@ -1,0 +1,25 @@
+# RLIC Dashboard Dependencies
+
+# Core framework
+streamlit>=1.36.0
+
+# Data visualization
+plotly>=5.18.0
+
+# Data processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Statistical analysis
+scipy>=1.10.0
+statsmodels>=0.14.0
+
+# Data fetching
+pandas-datareader>=0.10.0
+yfinance>=0.2.0
+
+# Data storage
+pyarrow>=14.0.0
+
+# FRED API (optional, for direct FRED access)
+fredapi>=0.5.0
