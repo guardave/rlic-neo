@@ -51,12 +51,8 @@ def render_analysis_selector():
     """
     init_session_state()
 
-    # Top bar with home button and analysis selector
-    col1, col2, col3 = st.columns([1, 3, 1])
-
-    with col1:
-        if st.button("🏠 Home", use_container_width=True):
-            st.switch_page("app.py")
+    # Top bar with analysis selector (centered)
+    col1, col2, col3 = st.columns([1, 2, 1])
 
     with col2:
         selected = st.selectbox(
@@ -78,7 +74,7 @@ def render_analysis_selector():
 
 def render_sidebar_nav():
     """
-    Render the sidebar with current analysis info.
+    Render the sidebar with current analysis info and home button.
     Should be called after render_analysis_selector().
     """
     init_session_state()
@@ -87,6 +83,12 @@ def render_sidebar_nav():
     analysis = ANALYSES[analysis_id]
 
     with st.sidebar:
+        # Home button at top of sidebar
+        if st.button("🏠 Home", use_container_width=True):
+            st.switch_page("app.py")
+
+        st.markdown("---")
+
         # Current analysis header
         st.markdown(f"## {analysis['icon']} {analysis['short']}")
         st.caption(analysis['description'])

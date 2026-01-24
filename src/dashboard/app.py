@@ -95,7 +95,7 @@ def render_analysis_selector():
 
 
 def render_sidebar_nav():
-    """Render the sidebar with current analysis and navigation."""
+    """Render the sidebar with current analysis info."""
     analysis_id = st.session_state.selected_analysis
     analysis = ANALYSES[analysis_id]
 
@@ -103,20 +103,6 @@ def render_sidebar_nav():
         # Current analysis header
         st.markdown(f"## {analysis['icon']} {analysis['short']}")
         st.caption(analysis['description'])
-        st.markdown("---")
-
-        # Navigation
-        st.markdown("**Sections**")
-        st.page_link("app.py", label="🏠 Home", icon="🏠")
-        st.page_link("pages/1_🏠_Catalog.py", label="📋 Catalog")
-        st.page_link("pages/2_📊_Overview.py", label="📊 Overview")
-        st.page_link("pages/3_📖_Qualitative.py", label="📖 Qualitative")
-        st.page_link("pages/4_📈_Correlation.py", label="📈 Correlation")
-        st.page_link("pages/5_🔄_Lead_Lag.py", label="🔄 Lead-Lag")
-        st.page_link("pages/6_🎯_Regimes.py", label="🎯 Regimes")
-        st.page_link("pages/7_💰_Backtests.py", label="💰 Backtests")
-        st.page_link("pages/8_🔮_Forecasts.py", label="🔮 Forecasts")
-
         st.markdown("---")
         st.caption("RLIC Enhancement Project v0.1")
 
