@@ -1201,9 +1201,145 @@ def display_hover_data(hoverData):
     ])
 ```
 
+### 6.6 Adding New Analyses to Dashboard (CRITICAL)
+
+**⚠️ MANDATORY: When adding a new analysis, ALL pages must be updated.**
+
+#### 6.6.1 Column Detection Pattern
+
+Each dashboard page has column detection logic that identifies indicator and return columns. When adding a new analysis, add handlers to ALL 6 pages:
+
+1. **3_📖_Qualitative.py** - Add qualitative content section
+2. **4_📈_Correlation.py** - Add column detection handler
+3. **5_🔄_Lead_Lag.py** - Add column detection handler
+4. **6_🎯_Regimes.py** - Add column detection handler
+5. **7_💰_Backtests.py** - Add column detection handler
+6. **8_🔮_Forecasts.py** - Add column detection handler
+
+**Standard Column Detection Pattern:**
+```python
+elif analysis_id == 'new_analysis_id':
+    indicator_cols = [c for c in data.columns if 'indicator_keyword' in c.lower() and not c.endswith('_return')]
+    return_cols = [c for c in data.columns if c.endswith('_return')]
+    if not indicator_cols:
+        indicator_cols = [c for c in data.columns if c not in ['TARGET_TICKER', 'regime'] and not c.endswith('_return')]
+    if not return_cols and 'TARGET_TICKER' in data.columns:
+        data['TARGET_TICKER_return'] = data['TARGET_TICKER'].pct_change()
+        return_cols = ['TARGET_TICKER_return']
+```
+
+#### 6.6.2 Qualitative Page Content Template
+
+The Qualitative page requires substantive content for each analysis:
+
+```python
+elif analysis_id == 'new_analysis_id':
+    st.header("What is [Indicator Name]?")
+    st.markdown("""
+    **Definition**: [What the indicator measures]
+
+    **Data Source**: [Provider, e.g., FRED, Census Bureau]
+
+    **Frequency**: [Monthly/Weekly/Daily]
+
+    **Release Timing**: [Publication lag]
+    """)
+
+    st.header("Economic Rationale")
+    st.markdown("""
+    [Why this indicator should relate to the target asset]
+    """)
+
+    st.header("Investment Thesis")
+    st.markdown("""
+    [The expected relationship and mechanism]
+    """)
+
+    st.header("Key Considerations")
+    st.markdown("""
+    - [Limitation 1]
+    - [Limitation 2]
+    """)
+```
+
+#### 6.6.3 Fallback Column Detection
+
+Always update the fallback price_cols list to include new target tickers:
+
+```python
+# In fallback section of each page:
+price_cols = [c for c in data.columns if c in ['SPY', 'XLRE', 'XLP', 'XLY', 'QQQ', 'IWM', 'NEW_TICKER']]
+```
+
+#### 6.6.4 Pre-Delivery Verification Checklist
+
+**Before committing any new analysis:**
+
+```bash
+# 1. Start Docker
+docker compose -f docker-compose.dev.yml up -d
+
+# 2. Wait for container to be healthy
+docker compose logs -f dashboard
+
+# 3. Open browser to http://localhost:8501
+
+# 4. Test each page for the new analysis:
+#    - Select the new analysis from sidebar
+#    - Navigate to ALL 7 pages (Overview → Forecasts)
+#    - Verify no error messages
+#    - Verify charts render
+#    - Verify qualitative content appears
+
+# 5. If errors occur, fix and test again BEFORE committing
+```
+
+#### 6.6.5 Common Errors and Solutions
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| "Could not identify indicator or return columns" | Missing column detection handler | Add handler to the page |
+| Empty page | Missing qualitative content | Add content to Qualitative page |
+| "No data available" | Data file not found | Create/verify data/*.parquet file |
+| Charts not rendering | Column names don't match | Check data column naming |
+
+**Key Lesson**: Frontend verification is as critical as backend analysis. Always test the dashboard locally before delivery.
+
 ---
 
 ## Phase 7: Documentation
+
+### 7.0 Documenting Negative Results
+
+**IMPORTANT: Negative results are valid research findings and MUST be documented.**
+
+When statistical analysis shows no significant relationship:
+- **DO** document the finding clearly ("No statistically significant relationship found")
+- **DO** report p-values and effect sizes even when not significant
+- **DO** explain why the expected relationship may not exist
+- **DO** suggest alternative hypotheses or future research directions
+- **DON'T** omit or downplay negative findings
+- **DON'T** interpret non-significant results as "weak" relationships
+
+**Example Negative Finding Documentation:**
+```markdown
+## Key Finding: No Significant Relationship
+
+The analysis found **no statistically significant relationship** between [Indicator] and [Target]:
+
+| Metric | Value | Interpretation |
+|--------|-------|----------------|
+| Pearson Correlation | -0.022 | Near zero |
+| P-value | 0.785 | NOT significant (p > 0.05) |
+| R² | 0.0005 | No explanatory power |
+
+**Why the expected relationship may not exist:**
+1. [Economic reasoning]
+2. [Alternative factors that dominate]
+3. [Structural changes in market]
+
+**Recommendation:** This indicator should NOT be used for [Target] timing strategies.
+```
 
 ### 7.1 Report Structure
 
@@ -1332,6 +1468,7 @@ data/{analysis_name}_{data_type}.csv
 
 Before finalizing any analysis:
 
+**Phase 0-5 (Analysis):**
 - [ ] Qualitative analysis completed with literature citations
 - [ ] Seasonality checked and documented
 - [ ] Spurious correlations ruled out
@@ -1343,6 +1480,19 @@ Before finalizing any analysis:
 - [ ] Visual examples validated against data
 - [ ] All charts have interactive features
 - [ ] Report follows standard structure
+
+**Phase 6 (Dashboard) - CRITICAL:**
+- [ ] Column detection handlers added to ALL dashboard pages (see Section 6.6)
+- [ ] Qualitative page has content for the new analysis
+- [ ] Data file created with correct column naming
+- [ ] Dashboard tested locally via Docker before commit
+- [ ] All 7 pages render without errors for new analysis
+- [ ] Verified with `docker compose -f docker-compose.dev.yml up -d`
+
+**Phase 7 (Documentation):**
+- [ ] Analysis report created following standard structure
+- [ ] Negative results documented if statistical significance not found
+- [ ] Files created section lists all new artifacts
 
 ### Appendix C: References
 
@@ -1368,4 +1518,5 @@ Before finalizing any analysis:
 | Version | Date | Author | Changes |
 |---------|------|--------|---------|
 | 1.0 | 2026-01-24 | RA Cheryl | Initial unified SOP |
+| 1.1 | 2026-01-26 | RA Cheryl | Added Section 6.6 (Dashboard Requirements for New Analyses), Section 7.0 (Documenting Negative Results), enhanced Quality Checklist with frontend verification steps. Lessons learned from XLP/XLY analysis delivery. |
 
