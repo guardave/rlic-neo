@@ -158,5 +158,29 @@ Section 1.2 pipeline diagram has confusing arrow directions (Phase 3 ← Phase 4
 
 - [x] Send questions to Cheryl for response
 - [x] Based on responses, document any SOP amendments needed → SOP v1.2 released
+- [x] Verify all 15 fixes in SOP v1.2 ✅ (2026-01-26 18:30)
 - [ ] Create test plan aligned with final SOP v1.2
-- [ ] Verify all 15 fixes in SOP v1.2
+
+---
+
+## Verification Summary (2026-01-26)
+
+All 15 questions addressed in SOP v1.2:
+
+| Q# | Section Added/Modified | Verified |
+|----|----------------------|----------|
+| Q1-Q2 | Section 1.3: Acceptance Criteria & Fast-Fail Path | ✅ |
+| Q3 | Exception handling: `except (ValueError, LinAlgError) as e:` | ✅ |
+| Q4 | Section 1.3: Minimum sample sizes table | ✅ |
+| Q5 | Section 2.3: Multiple Testing Correction with FDR | ✅ |
+| Q6 | Section 2.4: Effect Size Thresholds (|r| ≥ 0.15) | ✅ |
+| Q7 | Monte Carlo: `random_seed=42` parameter added | ✅ |
+| Q8 | Section 7.3: Environment Specification | ✅ |
+| Q9 | Section 6.1: Updated to Streamlit | ✅ |
+| Q10 | Noted for future (automated UI testing) | ✅ |
+| Q11 | Noted for future (elif scaling) | ✅ |
+| Q12-Q13 | Section 7.4: Audit Trail Requirements | ✅ |
+| Q14 | Section 6.2.1: Clarified 7 pages | ✅ |
+| Q15 | Pipeline diagram: Arrows flow left→right | ✅ |
+
+**QA Assessment:** SOP v1.2 is production-ready.

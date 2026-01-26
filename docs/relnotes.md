@@ -1,5 +1,40 @@
 # Release Notes - RLIC Enhancement Project
 
+## Session: 2026-01-26 (SOP v1.2 - QA Review)
+
+### SOP Quality Improvements
+
+#### QA Review Process
+- **QA Keung** reviewed SOP v1.1 and identified 15 improvement areas
+- All questions addressed in SOP v1.2, verified by QA
+
+#### New SOP Sections
+- **Section 1.3**: Acceptance Criteria & Early Termination
+  - Go/no-go criteria per phase
+  - Fast-fail path (|r|<0.10 AND p>0.30 → skip to Phase 7)
+  - Standard minimum sample sizes
+- **Section 2.3**: Multiple Testing Correction (FDR/Bonferroni)
+- **Section 2.4**: Effect Size Thresholds (|r|≥0.15 for action)
+- **Section 7.3**: Environment Specification (requirements.txt)
+- **Section 7.4**: Audit Trail Requirements
+
+#### Code Quality Improvements
+- Fixed bare `except:pass` → specific exceptions + logging
+- Added `random_seed=42` to Monte Carlo for reproducibility
+- Updated Dash → Streamlit references
+
+### Lessons Learned
+
+1. **QA Review Process Works** - Structured review with severity ratings enables efficient prioritization
+
+2. **Statistical vs Economic Significance** - r=0.15 with p=0.001 may be statistically significant but economically trivial
+
+3. **Reproducibility Requirements** - Random seeds and audit trails are essential for production-grade analysis
+
+4. **Documentation Discrepancies** - SOP should match actual implementation (Dash vs Streamlit)
+
+---
+
 ## Session: 2026-01-26 (Update)
 
 ### Sector Analysis Correction and Full SOP Execution

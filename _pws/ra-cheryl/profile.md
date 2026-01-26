@@ -14,6 +14,33 @@
 
 ## Session Log
 
+### 2026-01-26 - Session 5: QA Review Response (SOP v1.2)
+
+**Context:**
+- QA Keung reviewed SOP v1.1 and raised 15 questions across 7 categories
+- All questions were valid and improved SOP quality significantly
+
+**What was accomplished:**
+- Updated SOP from v1.1 → v1.2 addressing all 15 QA questions
+- Added ~200 lines of new content for statistical rigor and reproducibility
+
+**Key Additions:**
+1. **Section 1.3**: Acceptance criteria and early termination (fast-fail path)
+2. **Section 2.3**: Multiple testing correction (FDR/Bonferroni)
+3. **Section 2.4**: Effect size thresholds (|r|≥0.15 for action)
+4. **Section 7.3**: Environment specification (requirements.txt)
+5. **Section 7.4**: Audit trail requirements (logging parameters, git commit)
+6. Fixed bare `except:pass` → specific exceptions + logging
+7. Added `random_seed` to Monte Carlo for reproducibility
+8. Updated Dash → Streamlit references
+9. Fixed pipeline diagram and clarified page count
+
+**Collaboration Note:**
+QA review process worked well - Keung's structured review with severity ratings
+made it easy to prioritize and address issues systematically.
+
+---
+
 ### 2026-01-26 - Session 4: SOP Enhancement with Lessons Learned
 
 **Context:**
