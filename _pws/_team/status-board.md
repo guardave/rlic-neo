@@ -1,5 +1,94 @@
 # Team Status Board
 
+## 2026-01-26 18:00 - RA Cheryl (Response to QA Keung)
+
+**Status:** SOP v1.2 Released - All 15 Questions Addressed
+
+**@Keung:** Excellent review! All points were valid. I've updated the SOP to v1.2. Here's how each question was addressed:
+
+### High Severity (Q1-Q2, Q5-Q6) ✅
+
+| Question | Resolution |
+|----------|------------|
+| **Q1: Acceptance criteria** | Added **Section 1.3** with go/no-go criteria per phase |
+| **Q2: Early termination** | Added fast-fail path: if |r|<0.10 AND p>0.30, skip to Phase 7 |
+| **Q5: Multiple testing** | Added **Section 2.3** with FDR/Bonferroni guidance and code |
+| **Q6: Effect size** | Added **Section 2.4** with minimum thresholds (|r|≥0.15 for action) |
+
+### Medium Severity (Q3-Q4, Q7-Q8, Q11-Q13) ✅
+
+| Question | Resolution |
+|----------|------------|
+| **Q3: Bare except:pass** | Fixed all 3 instances - now specify exception types + logging |
+| **Q4: Sample size** | Standardized in Section 1.3 (n≥30 correlation, n≥60 Granger, n≥20/regime) |
+| **Q7: Random seed** | Added `random_seed=42` parameter to Monte Carlo with logging |
+| **Q8: requirements.txt** | Added **Section 7.3** with environment specification |
+| **Q11: elif scaling** | Valid for future - noted for next refactoring cycle |
+| **Q12-Q13: Audit trail** | Added **Section 7.4** with audit trail requirements |
+
+### Low Severity (Q9, Q10, Q14, Q15) ✅
+
+| Question | Resolution |
+|----------|------------|
+| **Q9: Dash vs Streamlit** | Updated Section 6.1 to reflect Streamlit |
+| **Q10: Automated UI testing** | Future consideration - added to backlog |
+| **Q14: Page count** | Clarified: 7 analysis pages (excluding Home/Catalog) |
+| **Q15: Pipeline arrows** | Fixed diagram - all arrows now flow left→right |
+
+**Files Modified:**
+- `docs/sop/unified_analysis_sop.md` (v1.1 → v1.2)
+
+**Summary:** Added ~200 lines addressing statistical rigor, reproducibility, and auditability. Thank you for the thorough review - this significantly improves the SOP quality.
+
+---
+
+## 2026-01-26 17:15 - QA Keung
+
+**Status:** Review Complete - Questions for RA Cheryl
+
+**What was accomplished:**
+- Reviewed SOP v1.1 (`docs/sop/unified_analysis_sop.md`, 1,522 lines)
+- Documented 15 QA questions in `_pws/qa-keung/sop_review_notes.md`
+
+**Questions for Cheryl (High Priority):**
+
+### Q1-Q2: Acceptance Criteria & Early Termination
+The SOP defines *what* to do but not *when to stop*:
+- At what threshold should we proceed from Phase 2 to Phase 3? Appendix A shows `correlation > 0.3` but this isn't in the main checklist.
+- If Phase 2 shows p > 0.3, should we still perform Phase 3-5, or fast-fail to save effort?
+
+### Q3: Code Quality - Exception Handling
+Lines 407-409 have bare `except: pass`:
+```python
+except:
+    pass
+```
+This hides errors. Should these specify exception types or log failures?
+
+### Q5-Q6: Statistical Rigor
+- **Multiple testing**: When testing many indicator-target pairs, some will be significant by chance. Should we mention Bonferroni/FDR correction?
+- **Effect size**: r=0.15 with p=0.001 is statistically significant but economically trivial. Should we define minimum effect size thresholds (e.g., |r| > 0.15)?
+
+### Q7-Q8: Reproducibility
+- Monte Carlo (Section 5.1.4) doesn't mention `np.random.seed()` for reproducibility.
+- No environment spec (Python version, packages). Should there be a `requirements.txt` in deliverables?
+
+### Q9: Dash vs Streamlit
+SOP Section 6.4 specifies Plotly Dash but actual implementation is Streamlit. Should SOP be updated to match implementation?
+
+**Positive observations:**
+- Section 6.6 (Dashboard Requirements) is excellent - directly addresses XLP/XLY lesson
+- Section 7.0 (Negative Results) promotes scientific rigor
+- Quality Checklist with frontend verification is practical and actionable
+
+**Full review:** See `_pws/qa-keung/sop_review_notes.md` for all 15 questions with severity ratings.
+
+**Next steps:**
+- Awaiting Cheryl's response to questions
+- Will update SOP or create test plan based on responses
+
+---
+
 ## 2026-01-26 16:00 - RA Cheryl
 
 **Status:** Completed

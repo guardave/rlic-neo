@@ -59,15 +59,15 @@ The framework synthesizes:
 │  │  Qualitative │    │    Data      │    │  Statistical │          │
 │  │   Analysis   │    │ Preparation  │    │   Analysis   │          │
 │  └──────────────┘    └──────────────┘    └──────────────┘          │
-│         │                                       │                   │
-│         v                                       v                   │
+│                                                 │                   │
+│                                                 v                   │
 │  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐          │
-│  │   PHASE 3    │ <- │   PHASE 4    │ <- │   PHASE 5    │          │
+│  │   PHASE 3    │ -> │   PHASE 4    │ -> │   PHASE 5    │          │
 │  │  Lead-Lag &  │    │    Regime    │    │  Backtesting │          │
 │  │   Causality  │    │   Analysis   │    │              │          │
 │  └──────────────┘    └──────────────┘    └──────────────┘          │
-│         │                                       │                   │
-│         v                                       v                   │
+│                                                 │                   │
+│                                                 v                   │
 │  ┌──────────────┐    ┌──────────────┐                              │
 │  │   PHASE 6    │ -> │   PHASE 7    │                              │
 │  │  Dashboard & │    │Documentation │                              │
@@ -76,6 +76,40 @@ The framework synthesizes:
 │                                                                     │
 └─────────────────────────────────────────────────────────────────────┘
 ```
+
+### 1.3 Phase Acceptance Criteria and Early Termination
+
+**Go/No-Go Criteria for Each Phase:**
+
+| Phase | Acceptance Criteria | Early Termination |
+|-------|--------------------|--------------------|
+| **Phase 0** | Literature supports economic rationale | No economic basis → STOP |
+| **Phase 1** | n ≥ 60 observations, <20% missing | Insufficient data → STOP |
+| **Phase 2** | See thresholds below | Fast-fail conditions below |
+| **Phase 3** | Optimal lag identified | Proceed regardless |
+| **Phase 4** | Regime differences tested | Proceed regardless |
+| **Phase 5** | WFER > 0.5 | WFER < 0.3 → document as non-viable |
+| **Phase 6** | All pages render | Fix before proceeding |
+| **Phase 7** | Report complete | N/A |
+
+**Phase 2 Statistical Thresholds:**
+
+| Metric | Continue | Fast-Fail to Phase 7 |
+|--------|----------|----------------------|
+| **Correlation (|r|)** | ≥ 0.15 | < 0.10 |
+| **P-value** | < 0.10 | > 0.30 |
+| **Effect Size** | Economic significance | Trivial effect |
+
+**Fast-Fail Path:** If Phase 2 shows |r| < 0.10 AND p > 0.30, skip Phases 3-5 and proceed directly to Phase 7 to document the negative result. This saves effort while maintaining scientific rigor.
+
+**Minimum Sample Sizes (Standard):**
+
+| Analysis Type | Minimum n | Rationale |
+|--------------|-----------|-----------|
+| Correlation | 30 | CLT assumption |
+| Granger Causality | 60 | Lag requirements |
+| Regime Analysis | 20 per regime | Stable estimates |
+| Walk-Forward | 120 | 5 folds × 24 months |
 
 ---
 
@@ -322,6 +356,65 @@ def correlation_analysis(df, x_cols, y_cols):
 
 **Key Insight:** Always check if level correlation is spurious before drawing conclusions.
 
+### 2.3 Multiple Testing Correction
+
+**IMPORTANT:** When testing many indicator-target pairs, some will be significant by chance (Type I error inflation).
+
+**When to Apply Correction:**
+- Testing > 5 indicator-target pairs simultaneously
+- Exploratory analysis across many variables
+- Any study that will be used for investment decisions
+
+**Correction Methods:**
+
+```python
+from statsmodels.stats.multitest import multipletests
+
+def apply_multiple_testing_correction(p_values, method='fdr_bh'):
+    """
+    Apply multiple testing correction.
+
+    Methods:
+    - 'bonferroni': Conservative, controls FWER
+    - 'fdr_bh': Benjamini-Hochberg, controls FDR (recommended)
+    - 'fdr_by': Benjamini-Yekutieli, conservative FDR
+    """
+    rejected, corrected_pvals, _, _ = multipletests(
+        p_values, alpha=0.05, method=method
+    )
+    return corrected_pvals, rejected
+```
+
+**Reporting Requirement:** Always report:
+1. Number of tests conducted
+2. Correction method used
+3. Both raw and corrected p-values
+
+### 2.4 Effect Size Interpretation
+
+**Statistical significance ≠ Economic significance.** A correlation can be statistically significant but economically trivial.
+
+**Minimum Effect Size Thresholds:**
+
+| Metric | Trivial | Small | Medium | Large |
+|--------|---------|-------|--------|-------|
+| **|r|** | < 0.10 | 0.10-0.30 | 0.30-0.50 | > 0.50 |
+| **R²** | < 0.01 | 0.01-0.09 | 0.09-0.25 | > 0.25 |
+| **Cohen's d** | < 0.20 | 0.20-0.50 | 0.50-0.80 | > 0.80 |
+
+**Practical Thresholds for Investment Decisions:**
+
+| Finding | Threshold | Action |
+|---------|-----------|--------|
+| Correlation | |r| < 0.15 with p < 0.05 | Statistically significant but **not actionable** |
+| Correlation | |r| ≥ 0.15 with p < 0.05 | Proceed to Phase 3 |
+| Regime Difference | Sharpe diff < 0.2 | Not economically meaningful |
+| Regime Difference | Sharpe diff ≥ 0.3 | Economically significant |
+
+**Example Interpretation:**
+- r = 0.08, p = 0.001, n = 500 → "Statistically significant but trivial effect size. Not actionable."
+- r = 0.25, p = 0.02, n = 150 → "Moderate effect with significance. Proceed to causality testing."
+
 ---
 
 ## Phase 3: Lead-Lag and Causality
@@ -405,8 +498,8 @@ def granger_test(df, x_col, y_col, max_lag=6):
                 'p_value': p_val,
                 'significant': p_val < 0.05
             })
-    except:
-        pass
+    except (ValueError, np.linalg.LinAlgError) as e:
+        logging.warning(f"Granger test {x_col}->{y_col} failed: {e}")
 
     # Test Y -> X (bidirectional)
     try:
@@ -423,8 +516,8 @@ def granger_test(df, x_col, y_col, max_lag=6):
                 'p_value': p_val,
                 'significant': p_val < 0.05
             })
-    except:
-        pass
+    except (ValueError, np.linalg.LinAlgError) as e:
+        logging.warning(f"Granger test {y_col}->{x_col} failed: {e}")
 
     return pd.DataFrame(results)
 ```
@@ -675,7 +768,8 @@ def combinatorial_purged_cv(df, n_splits=5, purge_gap=3, embargo_pct=0.01):
 **Reference:** [MDPI - Monte Carlo-Based VaR Estimation](https://www.mdpi.com/2227-9091/13/8/146)
 
 ```python
-def monte_carlo_backtest(returns, n_simulations=10000, confidence=0.95):
+def monte_carlo_backtest(returns, n_simulations=10000, confidence=0.95,
+                        random_seed=42):
     """
     Monte Carlo robustness testing.
 
@@ -683,7 +777,13 @@ def monte_carlo_backtest(returns, n_simulations=10000, confidence=0.95):
     1. Bootstrap: Resample historical returns
     2. Permutation: Shuffle return order
     3. Parametric: Generate from fitted distribution
+
+    Args:
+        random_seed: Seed for reproducibility (default: 42)
     """
+    # Set seed for reproducibility
+    np.random.seed(random_seed)
+
     actual_sharpe = calculate_sharpe(returns)
     simulated_sharpes = []
 
@@ -704,9 +804,12 @@ def monte_carlo_backtest(returns, n_simulations=10000, confidence=0.95):
         'std_simulated': simulated_sharpes.std(),
         'ci_lower': np.percentile(simulated_sharpes, (1-confidence)/2 * 100),
         'ci_upper': np.percentile(simulated_sharpes, (1+confidence)/2 * 100),
-        'p_value': (simulated_sharpes >= actual_sharpe).mean()
+        'p_value': (simulated_sharpes >= actual_sharpe).mean(),
+        'random_seed': random_seed  # Log for audit trail
     }
 ```
+
+**Reproducibility Note:** Always set and log `random_seed` for reproducible results.
 
 ---
 
@@ -802,7 +905,8 @@ def multi_method_forecast(series, forecast_horizon=12):
         model = SARIMAX(series, order=(1,1,1), seasonal_order=(0,1,1,12))
         fitted = model.fit(disp=False)
         results['sarima'] = fitted.forecast(forecast_horizon).values
-    except:
+    except (ValueError, np.linalg.LinAlgError, ConvergenceWarning) as e:
+        logging.warning(f"SARIMA fit failed: {e}")
         results['sarima'] = [np.nan] * forecast_horizon
 
     # Method 4: Historical + Trend Adjustment
@@ -854,23 +958,34 @@ def apply_signal_lag(signals, lag=1):
 ### 6.1 Dashboard Architecture
 
 **Technology Stack:**
-- **Backend:** Python with Plotly Dash
-- **Charts:** Plotly.js (50+ chart types)
+- **Framework:** Streamlit (Python)
+- **Charts:** Plotly.js via `st.plotly_chart()` (50+ chart types)
 - **Interactive Features:** Crosshairs, zoom, hover cards
-- **Deployment:** Flask-based web app
+- **Deployment:** Streamlit Cloud or Docker container
 
-**Reference:** [Plotly Dash Documentation](https://dash.plotly.com/interactive-graphing)
+**Reference:** [Streamlit Documentation](https://docs.streamlit.io/)
+
+**Note:** While the original SOP specified Plotly Dash, the actual implementation uses Streamlit for faster development. The Plotly chart patterns remain valid - use `st.plotly_chart(fig, use_container_width=True)` instead of Dash callbacks.
 
 ### 6.2 Dashboard Components
 
 #### 6.2.1 Main Navigation
+
+Dashboard has **7 pages** (not including Home/Catalog):
+1. Overview - KPIs and summary
+2. Qualitative - Economic rationale
+3. Correlation - Statistical relationships
+4. Lead-Lag - Timing analysis
+5. Regimes - Phase-based performance
+6. Backtests - Strategy validation
+7. Forecasts - Future predictions
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │  RLIC Analysis Dashboard                                        │
 ├─────────────────────────────────────────────────────────────────┤
 │  [Overview] [Qualitative] [Correlation] [Lead-Lag] [Regimes]    │
-│  [Backtests] [Forecasts] [Reports]                              │
+│  [Backtests] [Forecasts]                                        │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -1406,6 +1521,84 @@ data/{analysis_name}_{data_type}.parquet
 data/{analysis_name}_{data_type}.csv
 ```
 
+### 7.3 Environment Specification
+
+**REQUIRED:** Every analysis must include environment specification for reproducibility.
+
+**Minimum requirements.txt:**
+```
+# Core
+python>=3.10
+pandas>=2.0.0
+numpy>=1.24.0
+scipy>=1.10.0
+
+# Statistics
+statsmodels>=0.14.0
+scikit-learn>=1.3.0
+
+# Visualization
+plotly>=5.15.0
+streamlit>=1.28.0
+
+# Data
+yfinance>=0.2.28
+pandas-datareader>=0.10.0
+pyarrow>=12.0.0
+
+# Optional: ML
+hmmlearn>=0.3.0
+```
+
+**Store with analysis:**
+```
+docs/analysis_reports/{analysis_name}_requirements.txt
+```
+
+### 7.4 Audit Trail Requirements
+
+**Every backtest result must log:**
+
+```python
+audit_trail = {
+    # Identification
+    'analysis_id': 'spy_retailirsa',
+    'run_timestamp': datetime.now().isoformat(),
+    'analyst': 'RA Cheryl',
+
+    # Environment
+    'python_version': sys.version,
+    'package_versions': {pkg: version for pkg, version in packages},
+    'random_seed': 42,
+
+    # Data
+    'data_source': 'FRED',
+    'data_start_date': '1992-01-01',
+    'data_end_date': '2024-12-31',
+    'n_observations': 396,
+
+    # Parameters
+    'signal_lag': 1,
+    'train_window': 60,
+    'test_window': 12,
+    'walk_forward_folds': 5,
+
+    # Results
+    'sharpe_ratio': 0.62,
+    'wfer': 0.87,
+    'p_value': 0.023,
+
+    # Git
+    'git_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD']).decode().strip(),
+    'git_branch': 'main'
+}
+```
+
+**Storage:** Save audit trail as JSON alongside results:
+```
+data/{analysis_name}_audit_trail.json
+```
+
 ---
 
 ## Appendices
@@ -1519,4 +1712,5 @@ Before finalizing any analysis:
 |---------|------|--------|---------|
 | 1.0 | 2026-01-24 | RA Cheryl | Initial unified SOP |
 | 1.1 | 2026-01-26 | RA Cheryl | Added Section 6.6 (Dashboard Requirements for New Analyses), Section 7.0 (Documenting Negative Results), enhanced Quality Checklist with frontend verification steps. Lessons learned from XLP/XLY analysis delivery. |
+| 1.2 | 2026-01-26 | RA Cheryl | QA Review Response (QA Keung): Added Section 1.3 (Acceptance Criteria & Early Termination), Section 2.3-2.4 (Multiple Testing Correction & Effect Size), Section 7.3-7.4 (Environment Spec & Audit Trail). Fixed exception handling in code samples, added random seeds for reproducibility, updated Dash→Streamlit, clarified page count. |
 
