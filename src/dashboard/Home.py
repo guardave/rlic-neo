@@ -35,8 +35,10 @@ col1, col2 = st.columns(2)
 cards = [
     ('investment_clock', col1, "11 Sectors • 4 Phases • Monthly Data"),
     ('spy_retailirsa', col1, "RETAILIRSA • SPY • Lead-Lag Analysis"),
+    ('xlp_retailirsa', col1, "RETAILIRSA • XLP • Lead-Lag Analysis"),
     ('spy_indpro', col2, "INDPRO • SPY • Regime Analysis"),
     ('xlre_orders_inv', col2, "Orders/Inv Ratio • XLRE • Backtest"),
+    ('xlk_retailirsa', col2, "RETAILIRSA • XLK • Lead-Lag Analysis"),
 ]
 
 for analysis_id, col, caption in cards:
@@ -64,7 +66,7 @@ st.markdown("---")
 st.subheader("📊 Available Data")
 
 stat_cols = st.columns(4)
-stat_cols[0].metric("Analyses", "4")
+stat_cols[0].metric("Analyses", "6")
 stat_cols[1].metric("Indicators", "12+")
 stat_cols[2].metric("Data Range", "1990-2024")
 stat_cols[3].metric("Update Freq", "Monthly")

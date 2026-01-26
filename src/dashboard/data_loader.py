@@ -581,7 +581,9 @@ def load_analysis_data(analysis_id: str, max_cache_age: int = 24) -> pd.DataFram
     existing_files = {
         'spy_retailirsa': 'spy_retail_inv_sales.parquet',
         'spy_indpro': 'spy_ip_analysis.parquet',
-        'xlre_orders_inv': 'xlre_oi_analysis.parquet'
+        'xlre_orders_inv': 'xlre_oi_analysis.parquet',
+        'xlp_retailirsa': 'xlp_retail_inv_sales.parquet',
+        'xlk_retailirsa': 'xlk_retail_inv_sales.parquet'
     }
 
     if analysis_id in existing_files:
@@ -608,6 +610,14 @@ def load_analysis_data(analysis_id: str, max_cache_age: int = 24) -> pd.DataFram
     elif analysis_id == 'xlre_orders_inv':
         return load_indicator_with_target('orders_inv_ratio', 'XLRE',
                                           start_date="2015-01-01",
+                                          max_cache_age=max_cache_age)
+
+    elif analysis_id == 'xlp_retailirsa':
+        return load_indicator_with_target('retail_inv_sales', 'XLP',
+                                          max_cache_age=max_cache_age)
+
+    elif analysis_id == 'xlk_retailirsa':
+        return load_indicator_with_target('retail_inv_sales', 'XLK',
                                           max_cache_age=max_cache_age)
 
     else:

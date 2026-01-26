@@ -34,6 +34,18 @@ ANALYSES = {
         'icon': '🏠',
         'short': 'XLRE-O/I',
         'description': 'Real estate sector vs orders-to-inventories ratio'
+    },
+    'xlp_retailirsa': {
+        'name': 'XLP vs Retail Inv/Sales',
+        'icon': '🛒',
+        'short': 'XLP-Retail',
+        'description': 'Consumer Staples sector vs retail inventory-to-sales ratio'
+    },
+    'xlk_retailirsa': {
+        'name': 'XLK vs Retail Inv/Sales',
+        'icon': '💻',
+        'short': 'XLK-Retail',
+        'description': 'Technology sector vs retail inventory-to-sales ratio'
     }
 }
 
