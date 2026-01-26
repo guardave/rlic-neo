@@ -33,3 +33,31 @@ First session as QA Keung on RLIC project. Performed QA review of the Unified An
 ### Next Session
 - Create test plan aligned with SOP v1.2 if requested
 - Dashboard testing when new analyses are added
+
+---
+
+## EOD Summary - 2026-01-26
+
+### Session Accomplishments
+1. Initialized as QA Keung on RLIC project
+2. Reviewed SOP v1.1 (1,522 lines), identified 15 QA gaps
+3. Collaborated with RA Cheryl - all questions addressed in SOP v1.2
+4. Verified SOP v1.2 changes, approved as production-ready
+5. Established QA workspace with session notes and memories
+
+### Challenges Encountered
+- None significant. First session went smoothly with good team collaboration.
+
+### Key Lessons Learnt
+1. **Severity classification enables triage** - High/Medium/Low ratings help prioritize responses
+2. **Statistical vs economic significance** - p-value alone is insufficient; effect size matters
+3. **Reproducibility is non-negotiable** - Random seeds + audit trails required
+4. **Documentation must match implementation** - Dash vs Streamlit mismatch was confusing
+5. **Status board enables async collaboration** - Questions posted and answered same day
+
+### Outstanding Work
+- Test plan for SOP v1.2 (pending request)
+- Dashboard testing for future analyses
+
+### Commit History
+- `c565b0b` - QA review of SOP v1.1 → v1.2: 15 questions verified
