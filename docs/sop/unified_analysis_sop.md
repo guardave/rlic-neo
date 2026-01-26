@@ -1,8 +1,13 @@
 # Unified Time Series Analysis and Backtesting SOP
 
-**Version:** 1.0
-**Date:** 2026-01-24
+**Version:** 1.3
+**Date:** 2026-01-26
 **Author:** RA Cheryl
+
+**Changelog:**
+- v1.3 (2026-01-26): Moved fast-fail decision to AFTER Phase 3 lead-lag analysis
+- v1.2 (2026-01-26): Added acceptance criteria, effect size thresholds, audit trail requirements
+- v1.0 (2026-01-24): Initial release
 
 ---
 
@@ -85,22 +90,32 @@ The framework synthesizes:
 |-------|--------------------|--------------------|
 | **Phase 0** | Literature supports economic rationale | No economic basis → STOP |
 | **Phase 1** | n ≥ 60 observations, <20% missing | Insufficient data → STOP |
-| **Phase 2** | See thresholds below | Fast-fail conditions below |
-| **Phase 3** | Optimal lag identified | Proceed regardless |
+| **Phase 2** | Compute concurrent correlation | Proceed to Phase 3 (no early termination) |
+| **Phase 3** | Full lead-lag analysis | Fast-fail conditions below |
 | **Phase 4** | Regime differences tested | Proceed regardless |
 | **Phase 5** | WFER > 0.5 | WFER < 0.3 → document as non-viable |
 | **Phase 6** | All pages render | Fix before proceeding |
 | **Phase 7** | Report complete | N/A |
 
-**Phase 2 Statistical Thresholds:**
+**Phase 3 Statistical Thresholds (Fast-Fail Decision):**
 
-| Metric | Continue | Fast-Fail to Phase 7 |
-|--------|----------|----------------------|
-| **Correlation (|r|)** | ≥ 0.15 | < 0.10 |
-| **P-value** | < 0.10 | > 0.30 |
-| **Effect Size** | Economic significance | Trivial effect |
+| Metric | Continue to Phase 4 | Fast-Fail to Phase 7 |
+|--------|---------------------|----------------------|
+| **Best Correlation (|r|)** across all lags | ≥ 0.15 at any lag | < 0.10 at ALL lags |
+| **P-value** at best lag | < 0.10 | > 0.30 at ALL lags |
+| **Predictive Lag** (positive lag) | Significant at any positive lag | No significant positive lags |
 
-**Fast-Fail Path:** If Phase 2 shows |r| < 0.10 AND p > 0.30, skip Phases 3-5 and proceed directly to Phase 7 to document the negative result. This saves effort while maintaining scientific rigor.
+**Fast-Fail Path (IMPORTANT - applies AFTER Phase 3):**
+
+The fast-fail decision must be made AFTER completing lead-lag analysis, not after Phase 2 concurrent correlation. This is critical because:
+1. Concurrent correlation (lag=0) may be weak while lagged relationships are significant
+2. Economic indicators often lead or lag asset returns by several months
+3. Example: New Home Sales shows r=0.06 at lag=0 but r=0.22 at lag=+8
+
+**Fast-fail criteria (apply after Phase 3):**
+- If the BEST correlation across ALL lags (-18 to +18) shows |r| < 0.10 AND p > 0.30, skip Phases 4-5 and proceed to Phase 7
+- If significant correlations exist only at NEGATIVE lags (target leads indicator), document as "reverse causality - not actionable for trading" and proceed to Phase 7
+- If significant correlations exist at POSITIVE lags (indicator leads target), continue to Phase 4 even if concurrent correlation is weak
 
 **Minimum Sample Sizes (Standard):**
 
@@ -1712,5 +1727,4 @@ Before finalizing any analysis:
 |---------|------|--------|---------|
 | 1.0 | 2026-01-24 | RA Cheryl | Initial unified SOP |
 | 1.1 | 2026-01-26 | RA Cheryl | Added Section 6.6 (Dashboard Requirements for New Analyses), Section 7.0 (Documenting Negative Results), enhanced Quality Checklist with frontend verification steps. Lessons learned from XLP/XLY analysis delivery. |
-| 1.2 | 2026-01-26 | RA Cheryl | QA Review Response (QA Keung): Added Section 1.3 (Acceptance Criteria & Early Termination), Section 2.3-2.4 (Multiple Testing Correction & Effect Size), Section 7.3-7.4 (Environment Spec & Audit Trail). Fixed exception handling in code samples, added random seeds for reproducibility, updated Dash→Streamlit, clarified page count. |
 

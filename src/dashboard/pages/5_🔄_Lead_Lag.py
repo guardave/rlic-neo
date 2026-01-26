@@ -30,7 +30,8 @@ st.title(f"🔄 Lead-Lag: {get_analysis_title()}")
 with st.sidebar:
     st.markdown("---")
     st.subheader("Settings")
-    max_lag = st.slider("Max Lag (months)", 6, 24, 12)
+    # Extended range for analyses like XLRE/NewHomeSales that need 0-24 months
+    max_lag = st.slider("Max Lag (months)", 6, 24, 24 if analysis_id == 'xlre_newhomesales' else 12)
     granger_max_lag = st.slider("Granger Max Lag", 2, 12, 6)
 
 try:
@@ -87,6 +88,11 @@ try:
         if not return_cols and 'XLY' in data.columns:
             data['XLY_return'] = data['XLY'].pct_change()
             return_cols = ['XLY_return']
+    elif analysis_id == 'xlre_newhomesales':
+        indicator_cols = [c for c in data.columns if 'NewHomeSales' in c and ('Level' in c or 'YoY' in c)]
+        return_cols = ['XLRE_Returns'] if 'XLRE_Returns' in data.columns else []
+        if not indicator_cols:
+            indicator_cols = ['NewHomeSales_YoY'] if 'NewHomeSales_YoY' in data.columns else ['NewHomeSales_Level']
     else:
         indicator_cols = [c for c in data.columns if not c.endswith('_return') and c != 'regime']
         return_cols = [c for c in data.columns if c.endswith('_return')]

@@ -84,6 +84,13 @@ try:
         if not return_cols and 'XLY' in data.columns:
             data['XLY_return'] = data['XLY'].pct_change()
             return_cols = ['XLY_return']
+    elif analysis_id == 'xlre_newhomesales':
+        indicator_cols = [c for c in data.columns if 'NewHomeSales' in c and 'Level' in c or 'YoY' in c]
+        return_cols = ['XLRE_Returns'] if 'XLRE_Returns' in data.columns else []
+        if not indicator_cols:
+            indicator_cols = ['NewHomeSales_YoY_Lagged'] if 'NewHomeSales_YoY_Lagged' in data.columns else ['NewHomeSales_Level']
+        if 'Regime' in data.columns and 'regime' not in data.columns:
+            data['regime'] = data['Regime']
     else:
         indicator_cols = [c for c in data.columns if not c.endswith('_return') and c != 'regime']
         return_cols = [c for c in data.columns if c.endswith('_return')]

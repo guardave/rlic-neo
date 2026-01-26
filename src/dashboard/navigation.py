@@ -46,6 +46,12 @@ ANALYSES = {
         'icon': '🛍️',
         'short': 'XLY-Retail',
         'description': 'Consumer Discretionary sector vs retail inventory-to-sales ratio'
+    },
+    'xlre_newhomesales': {
+        'name': 'XLRE vs New Home Sales',
+        'icon': '🏡',
+        'short': 'XLRE-NHS',
+        'description': 'Real estate sector vs new home sales (lag +8 significant)'
     }
 }
 

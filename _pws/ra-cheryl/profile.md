@@ -14,6 +14,36 @@
 
 ## Session Log
 
+### 2026-01-27 - Session 7: Building Permits Final Analysis & EOD
+
+**Context:**
+- Continuation from Session 6 (dashboard integration)
+- User asked about Building Permits analysis results
+
+**What was accomplished:**
+- Extended lead-lag analysis for Building Permits (0-24 months)
+- Confirmed NO significant predictive power at any lag
+- Best lag +16 with r=-0.188, p=0.075 (not significant, wrong sign)
+- Updated status board and created session notes/memories
+
+**Key Insight:** Building Permits only shows reverse causality - market anticipates the data.
+
+---
+
+### 2026-01-27 - Session 6: SOP v1.3 & XLRE vs New Home Sales Dashboard
+
+**What was accomplished:**
+- Updated SOP v1.2 → v1.3 (critical: moved fast-fail to after Phase 3)
+- Added XLRE vs New Home Sales to all 7 dashboard pages
+- Created full analysis script and data files
+- Tested via Docker - health check passed
+
+**Key Finding:** New Home Sales at lag +8 is significant (r=0.223, p=0.025)
+
+**Critical Lesson:** Always complete full lead-lag analysis before fast-fail decision.
+
+---
+
 ### 2026-01-26 - Session 5: QA Review Response (SOP v1.2)
 
 **Context:**

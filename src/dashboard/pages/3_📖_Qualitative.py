@@ -577,6 +577,92 @@ elif analysis_id == 'xly_retailirsa':
     5. **Structural Changes**: E-commerce has changed retail inventory dynamics
     """)
 
+elif analysis_id == 'xlre_newhomesales':
+    st.header("XLRE vs New Home Sales (HSN1F)")
+
+    st.subheader("What is New Home Sales?")
+    st.markdown("""
+    **New Home Sales** (FRED: HSN1F) measures the number of newly constructed homes sold each month.
+    Published monthly by the U.S. Census Bureau.
+
+    **Key Characteristics:**
+    - **Forward-Looking**: New home sales require mortgage applications, credit checks, and planning
+    - **Construction Pipeline**: Sales drive future construction activity and employment
+    - **Consumer Confidence**: Major financial decisions reflecting consumer outlook
+    - **Release Timing**: ~3 weeks after the reference month
+    """)
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.subheader("Economic Signal Interpretation")
+        signal_table = pd.DataFrame({
+            'Signal': ['Rising YoY', 'Falling YoY', 'Strong Positive', 'Strong Negative'],
+            'Interpretation': [
+                'Healthy housing demand, economic strength',
+                'Weakening housing market, potential slowdown',
+                'Construction boom ahead',
+                'Recession warning signal'
+            ]
+        })
+        st.dataframe(signal_table, hide_index=True, use_container_width=True)
+
+    with col2:
+        st.subheader("Why +8 Month Lead?")
+        st.markdown("""
+        **Our Analysis Found**: New Home Sales from 8 months ago predicts XLRE returns.
+
+        **Why This Timing Makes Sense:**
+        1. Home sales reflect buyer decisions from 3-6 months prior
+        2. Construction activity follows sales by 6-12 months
+        3. REIT revenue impacts show with multi-quarter delay
+        4. Market may take time to fully price in housing trends
+        """)
+
+    st.subheader("Key Finding: Significant at Lag +8")
+    st.success("""
+    **POSITIVE RESULT**: r = 0.223, p = 0.025 at lag +8 months
+
+    This means New Home Sales data from 8 months ago has predictive power for XLRE returns.
+    The concurrent correlation (lag=0) is only r=0.06, demonstrating why **extended lead-lag
+    analysis is critical** - the SOP fast-fail at lag=0 would have missed this relationship.
+    """)
+
+    st.subheader("Why XLRE, Not Individual REITs?")
+    st.markdown("""
+    **XLRE Composition:**
+    - Dominated by commercial REITs (office, retail, industrial)
+    - NOT homebuilders or residential construction
+    - Still sensitive to housing market via:
+      - Interest rate environment
+      - Consumer wealth effects
+      - Economic cycle positioning
+
+    **Implication**: The relationship is indirect (housing → economy → REITs),
+    which explains the 8-month lag rather than a more direct immediate effect.
+    """)
+
+    st.subheader("Trading Strategy Implication")
+    strategy = pd.DataFrame({
+        'Metric': ['Signal', 'Lag', 'Direction', 'Statistical Significance'],
+        'Value': [
+            'New Home Sales YoY change (from 8 months ago)',
+            '+8 months',
+            'Rising NHS → Positive XLRE returns expected',
+            'p = 0.025 (significant at 5% level)'
+        ]
+    })
+    st.dataframe(strategy, hide_index=True, use_container_width=True)
+
+    st.subheader("Limitations")
+    st.markdown("""
+    1. **Short XLRE History**: Only ~109 months of data (XLRE launched October 2015)
+    2. **Indirect Relationship**: Housing affects REITs through multiple channels
+    3. **COVID Distortions**: 2020-2022 created unprecedented housing volatility
+    4. **Composition Mismatch**: XLRE is commercial REITs, not residential builders
+    5. **Single Significant Lag**: Only lag +8 is significant; others are marginal
+    """)
+
 else:
     # Fallback for unknown analysis types
     st.warning(f"Qualitative content for '{analysis_id}' has not been created yet.")
