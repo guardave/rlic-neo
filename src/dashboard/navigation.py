@@ -41,11 +41,11 @@ ANALYSES = {
         'short': 'XLP-Retail',
         'description': 'Consumer Staples sector vs retail inventory-to-sales ratio'
     },
-    'xlk_retailirsa': {
-        'name': 'XLK vs Retail Inv/Sales',
-        'icon': '💻',
-        'short': 'XLK-Retail',
-        'description': 'Technology sector vs retail inventory-to-sales ratio'
+    'xly_retailirsa': {
+        'name': 'XLY vs Retail Inv/Sales',
+        'icon': '🛍️',
+        'short': 'XLY-Retail',
+        'description': 'Consumer Discretionary sector vs retail inventory-to-sales ratio'
     }
 }
 

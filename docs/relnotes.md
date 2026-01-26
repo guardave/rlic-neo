@@ -1,5 +1,90 @@
 # Release Notes - RLIC Enhancement Project
 
+## Session: 2026-01-26 (Update)
+
+### Sector Analysis Correction and Full SOP Execution
+
+#### Sector Change
+- **XLK (Technology) → XLY (Consumer Discretionary)** - Corrected based on economic rationale
+  - XLY has direct connection to retail/consumer spending
+  - Technology sector less relevant to retail inventory dynamics
+
+#### Full 7-Phase Analysis Completed
+- **Phase 0**: Qualitative analysis with economic rationale and literature review
+- **Phase 2-5**: Quantitative analysis (correlation, lead-lag, regime)
+- **Phase 7**: Comprehensive documentation
+
+#### Key Research Findings (CRITICAL)
+- **NEGATIVE RESULT**: Neither XLP nor XLY shows statistically significant relationship with RETAILIRSA
+  - XLP: Returns corr -0.022, Regime p=0.785 (NOT significant)
+  - XLY: Returns corr -0.132, Regime p=0.379 (not significant)
+- XLP shows inverse pattern (better during rising inventories) - explained by defensive sector rotation
+- XLY shows expected economic pattern (Sharpe 0.77 falling vs 0.31 rising) but lacks significance
+- **Recommendation**: Do NOT use RETAILIRSA for sector rotation; SPY remains superior
+
+### Files Changed
+- `src/dashboard/navigation.py` - XLK → XLY
+- `src/dashboard/data_loader.py` - XLK → XLY
+- `src/dashboard/Home.py` - XLK → XLY
+- `src/dashboard/pages/2_📊_Overview.py` - XLK → XLY
+- `.gitignore` - Updated for XLY file
+- Deleted: `data/xlk_retail_inv_sales.parquet`
+- Created: `data/xly_retail_inv_sales.parquet`
+- Created: `docs/analysis_reports/sector_retailirsa_analysis.md`
+
+### Lessons Learned
+
+1. **Negative Results are Valid Findings** - Documenting lack of statistical significance prevents false confidence in trading strategies
+
+2. **Research Analyst Role** - Open to raising queries, doubts, and challenges; do not blindly execute without critical thinking
+
+3. **Sector-Level Analysis Challenges** - Higher volatility at sector level requires more data for statistical significance
+
+4. **Defensive Sector Rotation** - XLP's inverse pattern (better during rising inventories) aligns with flight-to-safety behavior during economic stress
+
+---
+
+## Session: 2026-01-26
+
+### Features Added
+
+#### New Analysis Pairs
+- **XLP vs Retail Inv/Sales** - Consumer Staples sector vs retail inventory-to-sales ratio
+- **XLY vs Retail Inv/Sales** - Consumer Discretionary sector vs retail inventory-to-sales ratio
+- Dashboard now supports 6 total analyses
+
+#### Navigation Improvements
+- Removed redundant home button from sidebar
+- Renamed Catalog page to Home
+- Fixed navigation flash by restructuring entry point
+- Main file is now `Home.py` (not a redirect from `app.py`)
+
+### Files Changed
+- `src/dashboard/Home.py` - New main entry point with Home page content
+- `src/dashboard/navigation.py` - Added 2 new analyses
+- `src/dashboard/data_loader.py` - Added XLP and XLY loading logic
+- `src/dashboard/pages/2_📊_Overview.py` - Added column detection for new analyses
+- `Dockerfile`, `docker-compose.dev.yml`, `.devcontainer/devcontainer.json` - Updated entry point
+- `.gitignore` - Added exceptions for dashboard data files
+- `data/xlp_retail_inv_sales.parquet`, `data/xly_retail_inv_sales.parquet` - New data files
+
+### Lessons Learned
+
+1. **Streamlit Navigation Flash Fix** - Don't use CSS to hide default nav items; instead make the main file BE the home page content (not a redirect)
+
+2. **Docker Testing** - Use `docker compose -f docker-compose.dev.yml up -d` for reliable frontend testing; can exec into container to test data loading
+
+3. **Chrome DevTools MCP** - Requires Chrome launched with `--remote-debugging-port=9222 --headless=new`
+
+4. **Adding New Analyses Pattern**:
+   - Add to `ANALYSES` dict in navigation.py
+   - Add loading case in data_loader.py
+   - Add column detection in Overview page
+   - Create parquet data file
+   - Add card to Home page
+
+---
+
 ## Session: 2026-01-03
 
 ### Bug Fixes

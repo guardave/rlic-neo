@@ -38,7 +38,7 @@ cards = [
     ('xlp_retailirsa', col1, "RETAILIRSA • XLP • Lead-Lag Analysis"),
     ('spy_indpro', col2, "INDPRO • SPY • Regime Analysis"),
     ('xlre_orders_inv', col2, "Orders/Inv Ratio • XLRE • Backtest"),
-    ('xlk_retailirsa', col2, "RETAILIRSA • XLK • Lead-Lag Analysis"),
+    ('xly_retailirsa', col2, "RETAILIRSA • XLY • Lead-Lag Analysis"),
 ]
 
 for analysis_id, col, caption in cards:
