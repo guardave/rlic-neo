@@ -398,6 +398,194 @@ elif analysis_id == 'xlre_orders_inv':
     5. **COVID Distortions**: 2020-2022 created unprecedented volatility
     """)
 
+elif analysis_id == 'xlp_retailirsa':
+    st.header("XLP (Consumer Staples) vs Retail Inv/Sales")
+
+    st.subheader("Sector Overview: Consumer Staples (XLP)")
+    st.markdown("""
+    XLP tracks companies producing **essential consumer products** that people buy regardless of
+    economic conditions. Top holdings include Procter & Gamble, Coca-Cola, Costco, PepsiCo, and Walmart.
+
+    **Key Characteristics:**
+    - **Defensive Sector**: Low beta, stable demand across economic cycles
+    - **Inelastic Demand**: Food, beverages, tobacco, household products are necessities
+    - **Dividend Focus**: Many holdings are dividend aristocrats
+    - **ETF Inception**: December 1998 (SPDR Select Sector)
+    """)
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.subheader("Economic Connection to Retail Inventories")
+        st.markdown("""
+        **Hypothesis**: XLP should show *weaker* sensitivity to RETAILIRSA because:
+
+        1. **Inelastic Demand**: People buy necessities regardless of economic conditions
+        2. **Stable Inventory Cycles**: Essential goods have more predictable demand patterns
+        3. **Price Competition**: Private labels and staples pricing dampens margin volatility
+        4. **Defensive Nature**: XLP often moves *opposite* to economic stress indicators
+        """)
+
+    with col2:
+        st.subheader("Flight-to-Safety Dynamics")
+        st.markdown("""
+        During economic stress (when retail inventories rise):
+
+        > *"Investors rotate from cyclical to defensive sectors during periods of uncertainty."*
+        > - Fidelity Sector Research
+
+        This means XLP may actually perform *better* when inventories are rising—not because
+        rising inventories are good for staples, but because investors seek safety.
+        """)
+
+    st.subheader("Research Finding: Inverse Pattern")
+    st.warning("""
+    **Our Analysis Found**: XLP performs slightly *better* when retail inventories are rising
+    (Sharpe 0.64 vs 0.55 for falling). This is NOT because rising inventories benefit staples—it's
+    the **defensive rotation effect**. When economic stress builds (rising inventories signal
+    weakening demand), investors rotate INTO defensive sectors like XLP.
+
+    **Statistical Significance**: p = 0.785 — **NOT SIGNIFICANT**. The regime difference
+    cannot be distinguished from random noise.
+    """)
+
+    st.subheader("Key Insights")
+    insights = pd.DataFrame({
+        'Finding': [
+            'XLP is defensive, not cyclical',
+            'Inverse pattern due to sector rotation',
+            'Returns correlation near zero (-0.022)',
+            'Regime difference not statistically significant',
+            'SPY shows stronger RETAILIRSA relationship'
+        ],
+        'Implication': [
+            'Do not expect direct economic sensitivity',
+            'Rising inventories may benefit XLP via flight-to-safety',
+            'RETAILIRSA cannot predict XLP returns',
+            'Cannot recommend trading strategy based on this relationship',
+            'Use broad market, not sector ETFs, for RETAILIRSA signals'
+        ]
+    })
+    st.dataframe(insights, hide_index=True, use_container_width=True)
+
+    st.subheader("Limitations")
+    st.markdown("""
+    1. **Defensive Sector Dynamics**: XLP moves opposite to economic stress, confounding analysis
+    2. **Sector Rotation Effects**: Flight-to-safety can mask underlying relationships
+    3. **Short ETF History**: XLP launched in 1998, limiting historical validation
+    4. **Aggregation Issues**: RETAILIRSA covers all retail, not just consumer staples
+    5. **Statistical Insignificance**: p = 0.785 means the pattern could be random
+    """)
+
+elif analysis_id == 'xly_retailirsa':
+    st.header("XLY (Consumer Discretionary) vs Retail Inv/Sales")
+
+    st.subheader("Sector Overview: Consumer Discretionary (XLY)")
+    st.markdown("""
+    XLY tracks companies producing **non-essential consumer goods and services**. Top holdings
+    include Amazon, Tesla, Home Depot, McDonald's, and Nike.
+
+    **Key Characteristics:**
+    - **Cyclical Sector**: High beta, performance tied to economic growth
+    - **Elastic Demand**: Discretionary purchases expand/contract with consumer confidence
+    - **Growth-Oriented**: Many holdings are growth stocks (Amazon, Tesla)
+    - **ETF Inception**: December 1998 (SPDR Select Sector)
+    """)
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.subheader("Economic Connection to Retail Inventories")
+        st.markdown("""
+        **Hypothesis**: XLY should show *stronger* sensitivity to RETAILIRSA because:
+
+        1. **Discretionary Demand is Elastic**: First to suffer when consumers cut back
+        2. **Bullwhip Effect**: Discretionary items experience most pronounced inventory swings
+        3. **Markup Sensitivity**: Excess inventory leads to markdowns on discretionary goods
+        4. **Retailer Exposure**: XLY includes major retailers (Home Depot, Amazon retail)
+        """)
+
+    with col2:
+        st.subheader("Consumer Confidence Link")
+        st.markdown("""
+        Consumer discretionary spending is directly tied to confidence and inventory dynamics:
+
+        > *"Rising retail inventories signal weakening consumer demand—discretionary purchases
+        are the first to be cut when consumers feel uncertain."* - Morningstar
+
+        > *"Consumer discretionary is the most cyclical sector, showing the strongest correlation
+        with the business cycle."* - Fidelity Sector Research
+        """)
+
+    st.subheader("Research Finding: Expected Pattern but Lacks Significance")
+    st.info("""
+    **Our Analysis Found**: XLY shows the economically expected pattern—performs better when
+    retail inventories are falling (Sharpe 0.77 vs 0.31 for rising). The difference is
+    substantial: +0.53% monthly (~6.4% annualized).
+
+    **However**: p = 0.379 — **NOT STATISTICALLY SIGNIFICANT** at conventional thresholds.
+    While the pattern matches economic intuition, the sample size and volatility prevent
+    statistical confidence.
+    """)
+
+    st.subheader("Why XLY Doesn't Beat SPY")
+    comparison = pd.DataFrame({
+        'Metric': ['Returns Correlation', 'Regime Sharpe (Falling)', 'Regime Sharpe (Rising)', 'Regime Difference'],
+        'XLY': ['-0.132', '0.77', '0.31', '+0.46'],
+        'SPY': ['-0.105', '0.98', '0.52', '+0.46'],
+        'Observation': [
+            'XLY slightly stronger correlation',
+            'SPY has better absolute performance',
+            'SPY performs better even in "bad" regime',
+            'Similar regime differentiation'
+        ]
+    })
+    st.dataframe(comparison, hide_index=True, use_container_width=True)
+
+    st.markdown("""
+    **Why SPY is superior for RETAILIRSA analysis:**
+    1. SPY has lower volatility, making patterns more detectable
+    2. SPY diversification reduces idiosyncratic noise
+    3. SPY has better absolute Sharpe ratios in both regimes
+    """)
+
+    st.subheader("Key Insights")
+    insights = pd.DataFrame({
+        'Finding': [
+            'XLY shows expected economic pattern',
+            'Performs better when inventories falling',
+            'Pattern matches bullwhip effect theory',
+            'Statistical significance not achieved',
+            'Higher volatility requires more data'
+        ],
+        'Implication': [
+            'Economic intuition is correct',
+            'Falling inventories = strong consumer demand = good for XLY',
+            'Discretionary items most sensitive to demand swings',
+            'Cannot recommend trading strategy with confidence',
+            'Need longer history or lower-vol instruments'
+        ]
+    })
+    st.dataframe(insights, hide_index=True, use_container_width=True)
+
+    st.subheader("Limitations")
+    st.markdown("""
+    1. **Amazon Concentration**: Amazon is 25%+ of XLY, distorting sector dynamics
+    2. **Statistical Insignificance**: p = 0.379 means pattern could be random
+    3. **Higher Volatility**: XLY's ~6% monthly std requires more data for significance
+    4. **Aggregation Issues**: RETAILIRSA covers all retail, not just discretionary
+    5. **Structural Changes**: E-commerce has changed retail inventory dynamics
+    """)
+
+else:
+    # Fallback for unknown analysis types
+    st.warning(f"Qualitative content for '{analysis_id}' has not been created yet.")
+    st.markdown("""
+    This analysis is available in the dashboard but detailed qualitative content
+    has not yet been added. Please refer to the quantitative tabs (Correlation,
+    Lead-Lag, Regimes) for data-driven insights.
+    """)
+
 # Footer with references
 st.divider()
-st.caption("Sources: FRED, Census Bureau, Federal Reserve, NBER, academic literature as cited above.")
+st.caption("Sources: FRED, Census Bureau, Federal Reserve, NBER, Fidelity, Morningstar, academic literature as cited above.")

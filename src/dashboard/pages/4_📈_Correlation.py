@@ -73,6 +73,22 @@ try:
         if not return_cols and 'XLRE' in data.columns:
             data['XLRE_return'] = data['XLRE'].pct_change()
             return_cols = ['XLRE_return']
+    elif analysis_id == 'xlp_retailirsa':
+        indicator_cols = [c for c in data.columns if 'retail' in c.lower() and not c.endswith('_return')]
+        return_cols = [c for c in data.columns if c.endswith('_return')]
+        if not indicator_cols:
+            indicator_cols = [c for c in data.columns if c not in ['XLP', 'regime'] and not c.endswith('_return')]
+        if not return_cols and 'XLP' in data.columns:
+            data['XLP_return'] = data['XLP'].pct_change()
+            return_cols = ['XLP_return']
+    elif analysis_id == 'xly_retailirsa':
+        indicator_cols = [c for c in data.columns if 'retail' in c.lower() and not c.endswith('_return')]
+        return_cols = [c for c in data.columns if c.endswith('_return')]
+        if not indicator_cols:
+            indicator_cols = [c for c in data.columns if c not in ['XLY', 'regime'] and not c.endswith('_return')]
+        if not return_cols and 'XLY' in data.columns:
+            data['XLY_return'] = data['XLY'].pct_change()
+            return_cols = ['XLY_return']
     else:
         indicator_cols = [c for c in data.columns if not c.endswith('_return') and c != 'regime']
         return_cols = [c for c in data.columns if c.endswith('_return')]
@@ -82,7 +98,7 @@ try:
         indicator_cols = [c for c in data.columns if not c.endswith('_return') and c != 'regime']
     if not return_cols:
         # Try to find a price column and compute returns
-        price_cols = [c for c in data.columns if c in ['SPY', 'XLRE', 'QQQ', 'IWM']]
+        price_cols = [c for c in data.columns if c in ['SPY', 'XLRE', 'XLP', 'XLY', 'QQQ', 'IWM']]
         if price_cols:
             price_col = price_cols[0]
             data[f'{price_col}_return'] = data[price_col].pct_change()
