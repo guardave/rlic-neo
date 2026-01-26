@@ -46,6 +46,16 @@ cache/
 data/*.csv
 data/*.parquet
 data/*.pkl
+
+# Exceptions: analysis data files needed for dashboard
+!data/spy_retail_inv_sales.parquet
+!data/spy_ip_analysis.parquet
+!data/xlre_oi_analysis.parquet
+!data/xlp_retail_inv_sales.parquet
+!data/xlk_retail_inv_sales.parquet
+!data/monthly_with_best_phases.parquet
+!data/sector_prices.parquet
+!data/retail_inv_sales.parquet
 *.log
 
 # Secrets
