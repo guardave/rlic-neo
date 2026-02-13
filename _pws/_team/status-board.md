@@ -1,5 +1,56 @@
 # Team Status Board
 
+## 2026-02-13 - RA Cheryl
+
+**Status:** Completed - ISM Manufacturing + Services PMI Analyses
+
+**Session Summary:**
+Added two new analyses (XLI vs ISM Manufacturing PMI, XLI vs ISM Services PMI) following SOP v1.3. Both show reverse causality — market leads PMI, not vice versa. Dashboard now has 9 analyses.
+
+**What was accomplished:**
+1. Design doc and implementation plan for both ISM PMI analyses
+2. ISM Manufacturing PMI analysis script with multi-source data assembly (FRED NAPM discontinued)
+3. ISM Services PMI analysis script with multi-source data assembly (FRED NMFBAI discontinued)
+4. Dashboard integration for both (all 7 pages each)
+5. Analysis reports for both
+6. Docker tested (HTTP 200)
+7. Pushed to remote
+
+**Key Finding: BOTH ISM PMIs are CONFIRMATORY, not PREDICTIVE**
+
+| Metric | Manufacturing | Services |
+|--------|--------------|----------|
+| Best Lag | -4 | -1 |
+| Best r | 0.241 | 0.317 |
+| Significant Lags | 11 (all negative) | 8 (all negative) |
+| Direction | XLI leads PMI | XLI leads PMI |
+| Expansion Sharpe | 0.93 | 0.79 |
+| Contraction Sharpe | -0.12 | -1.38 |
+| Strategy Sharpe | 0.77 | 0.53 |
+| Benchmark Sharpe | 0.56 | 0.42 |
+| Observations | 314 | 245 |
+| Data Period | 1999-12 to 2026-01 | 1999-12 to 2020-04 |
+
+**Data sourcing challenge:** FRED discontinued ISM series (~2016). Both scripts assemble data from forecasts.org (historical), hardcoded ISM press release values (2014-2020 gap), DBnomics, and ycharts. Services data limited to 2020-04 because recent web sources returned 404.
+
+**Actionable:** NO for trade timing, YES for risk management (avoid contraction periods)
+
+**Commits (7):**
+- `eae348a` Design doc
+- `bf45a00` Implementation plan
+- `7b91283` ISM Mfg analysis script + data
+- `637adad` ISM Mfg dashboard (8 analyses)
+- `b6fb748` ISM Mfg analysis report
+- `677b846` ISM Svc analysis script + data
+- `244a962` ISM Svc dashboard + report (9 analyses)
+
+**Outstanding work for next session:**
+- Dashboard refactoring: Replace elif chains with config-driven column mapping
+- Consider extending Services PMI data with manual updates for 2020-05 to present
+- Lead-lag slider parameterization (deferred to refactor)
+
+---
+
 ## 2026-01-27 01:15 - RA Cheryl (EOD)
 
 **Status:** ✅ Completed - Session End
