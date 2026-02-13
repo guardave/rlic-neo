@@ -40,6 +40,7 @@ cards = [
     ('spy_indpro', col2, "INDPRO • SPY • Regime Analysis"),
     ('xlre_orders_inv', col2, "Orders/Inv Ratio • XLRE • Backtest"),
     ('xly_retailirsa', col2, "RETAILIRSA • XLY • Lead-Lag Analysis"),
+    ('xli_ism_mfg', col2, "ISM Mfg PMI • XLI • Confirmatory Signal"),
 ]
 
 for analysis_id, col, caption in cards:
@@ -67,7 +68,7 @@ st.markdown("---")
 st.subheader("📊 Available Data")
 
 stat_cols = st.columns(4)
-stat_cols[0].metric("Analyses", "7")
+stat_cols[0].metric("Analyses", "8")
 stat_cols[1].metric("Indicators", "12+")
 stat_cols[2].metric("Data Range", "1990-2024")
 stat_cols[3].metric("Update Freq", "Monthly")

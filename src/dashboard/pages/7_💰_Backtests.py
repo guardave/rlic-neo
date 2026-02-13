@@ -107,6 +107,11 @@ try:
         # Use pre-computed regime if available
         if 'Regime' in data.columns and 'regime' not in data.columns:
             data['regime'] = data['Regime']
+    elif analysis_id == 'xli_ism_mfg':
+        indicator_cols = ['ISM_Mfg_PMI_Level_Lagged'] if 'ISM_Mfg_PMI_Level_Lagged' in data.columns else ['ISM_Mfg_PMI_Level']
+        return_cols = ['XLI_Returns'] if 'XLI_Returns' in data.columns else []
+        if 'Regime' in data.columns and 'regime' not in data.columns:
+            data['regime'] = data['Regime']
     else:
         indicator_cols = [c for c in data.columns if not c.endswith('_return') and c != 'regime']
         return_cols = [c for c in data.columns if c.endswith('_return')]

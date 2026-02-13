@@ -52,6 +52,12 @@ ANALYSES = {
         'icon': '🏡',
         'short': 'XLRE-NHS',
         'description': 'Real estate sector vs new home sales (lag +8 significant)'
+    },
+    'xli_ism_mfg': {
+        'name': 'XLI vs ISM Manufacturing PMI',
+        'icon': '🏭',
+        'short': 'XLI-MFG',
+        'description': 'Industrials sector vs ISM Manufacturing PMI (confirmatory)'
     }
 }
 
