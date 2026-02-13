@@ -58,6 +58,12 @@ ANALYSES = {
         'icon': '🏭',
         'short': 'XLI-MFG',
         'description': 'Industrials sector vs ISM Manufacturing PMI (confirmatory)'
+    },
+    'xli_ism_svc': {
+        'name': 'XLI vs ISM Services PMI',
+        'icon': '🏢',
+        'short': 'XLI-SVC',
+        'description': 'Industrials sector vs ISM Services PMI (confirmatory)'
     }
 }
 

@@ -751,6 +751,91 @@ elif analysis_id == 'xli_ism_mfg':
     5. **Market Pricing**: PMI is closely watched; moves may already be priced in
     """)
 
+elif analysis_id == 'xli_ism_svc':
+    st.header("XLI vs ISM Services PMI (Non-Manufacturing)")
+
+    st.subheader("What is ISM Services PMI?")
+    st.markdown("""
+    The **ISM Services PMI** (also known as Non-Manufacturing PMI) is a monthly survey of purchasing
+    managers at services-sector companies. Published by the Institute for Supply Management on the
+    **3rd business day of each month** (2 days after Manufacturing PMI).
+
+    **Key characteristics:**
+    - Covers **~80% of GDP** (services dominate the US economy)
+    - Surveys sectors like healthcare, finance, retail, transportation, professional services
+    - Composite index from 4 subindices: Business Activity, New Orders, Employment, Supplier Deliveries
+    - **PMI > 50** = services sector expansion; **PMI ≤ 50** = contraction
+    """)
+
+    st.subheader("Economic Signal Interpretation")
+    interpretation_data = {
+        'PMI Range': ['> 55', '50-55', '< 50', '< 45'],
+        'Signal': ['Strong Expansion', 'Moderate Growth', 'Contraction', 'Severe Contraction'],
+        'Economic Meaning': [
+            'Services sector growing robustly, broad-based expansion',
+            'Growth continuing but at a slower pace',
+            'Services sector shrinking, potential recession risk',
+            'Deep contraction, typically recession territory'
+        ]
+    }
+    st.table(pd.DataFrame(interpretation_data))
+
+    st.subheader("Why Compare with XLI (Industrials)?")
+    st.markdown("""
+    **Hypothesis**: Services PMI may influence Industrials because:
+    1. **Input-output linkages**: Services firms purchase manufactured goods
+    2. **GDP proxy**: Services = ~80% of GDP, so broad health affects all sectors
+    3. **Employment signal**: Services employment trends affect consumer spending on industrial goods
+
+    **Counter-hypothesis**: The relationship may be weak because:
+    - XLI holds **manufacturing** companies, not services
+    - Manufacturing PMI is a more direct indicator for XLI
+    - Services PMI may be better suited for consumer/financial sector ETFs
+    """)
+
+    st.subheader("Key Finding")
+    st.warning("""
+    ⚠️ **CONFIRMATORY, NOT PREDICTIVE**: ISM Services PMI does NOT predict XLI returns.
+
+    All 8 significant lags are **negative** (lag -1 through -11), meaning XLI returns
+    move FIRST, then Services PMI follows 1-11 months later.
+
+    **Best lag: -1 month** (r=0.317, p<0.0001) — XLI leads Services PMI by 1 month.
+    """)
+
+    st.markdown("""
+    **Despite reverse causality, regime filtering is useful:**
+    - **Svc Expansion** (PMI > 50): Mean +1.05%/mo, Sharpe 0.79
+    - **Svc Contraction** (PMI ≤ 50): Mean -3.94%/mo, Sharpe -1.38
+
+    The regime difference is highly significant (p<0.0001).
+    """)
+
+    st.subheader("Data Limitation")
+    st.info("""
+    📊 **Data Period**: December 1999 to April 2020 (245 months)
+
+    The ISM Services data was assembled from historical sources (forecasts.org) and
+    hardcoded ISM press release values. Recent data (2020-05+) is not available because
+    FRED discontinued the NMFBAI series and alternative web sources returned errors.
+    """)
+
+    st.subheader("Comparison with Manufacturing PMI")
+    comparison_data = {
+        'Metric': ['Best Lag', 'Best r', 'Significant Lags', 'Direction', 'Expansion Sharpe', 'Contraction Sharpe', 'Observations'],
+        'Manufacturing': ['-4', '0.241', '11', 'All negative', '0.93', '-0.12', '314'],
+        'Services': ['-1', '0.317', '8', 'All negative', '0.79', '-1.38', '245']
+    }
+    st.table(pd.DataFrame(comparison_data))
+
+    st.markdown("""
+    **Key differences:**
+    - Services PMI shows **stronger concurrent correlation** (r=0.317 at lag -1 vs r=0.241 at lag -4)
+    - Both are confirmatory (all significant lags negative)
+    - Services has **more extreme contraction penalty** (Sharpe -1.38 vs -0.12)
+    - Manufacturing has more data (314 vs 245 observations)
+    """)
+
 else:
     # Fallback for unknown analysis types
     st.warning(f"Qualitative content for '{analysis_id}' has not been created yet.")

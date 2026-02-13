@@ -585,7 +585,8 @@ def load_analysis_data(analysis_id: str, max_cache_age: int = 24) -> pd.DataFram
         'xlp_retailirsa': 'xlp_retail_inv_sales.parquet',
         'xly_retailirsa': 'xly_retail_inv_sales.parquet',
         'xlre_newhomesales': 'xlre_newhomesales_full.parquet',
-        'xli_ism_mfg': 'xli_ism_mfg_full.parquet'
+        'xli_ism_mfg': 'xli_ism_mfg_full.parquet',
+        'xli_ism_svc': 'xli_ism_svc_full.parquet'
     }
 
     if analysis_id in existing_files:

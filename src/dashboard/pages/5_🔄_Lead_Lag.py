@@ -98,6 +98,13 @@ try:
         return_cols = ['XLI_Returns'] if 'XLI_Returns' in data.columns else []
         if not indicator_cols:
             indicator_cols = ['ISM_Mfg_PMI_Level'] if 'ISM_Mfg_PMI_Level' in data.columns else []
+    elif analysis_id == 'xli_ism_svc':
+        indicator_cols = [c for c in data.columns if 'ISM_Svc_PMI' in c and ('Level' in c or 'YoY' in c)]
+        return_cols = ['XLI_Returns'] if 'XLI_Returns' in data.columns else []
+        if not indicator_cols:
+            indicator_cols = ['ISM_Svc_PMI_Level'] if 'ISM_Svc_PMI_Level' in data.columns else []
+        if 'Regime' in data.columns and 'regime' not in data.columns:
+            data['regime'] = data['Regime']
     else:
         indicator_cols = [c for c in data.columns if not c.endswith('_return') and c != 'regime']
         return_cols = [c for c in data.columns if c.endswith('_return')]
