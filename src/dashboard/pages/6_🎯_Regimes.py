@@ -66,6 +66,28 @@ try:
         st.error(f"Could not identify columns. Available: {data.columns.tolist()}")
         st.stop()
 
+    # Dynamic lag exploration from config
+    lag_config = resolved.get('lag_config', {})
+    base_col = lag_config.get('base_col')
+    if base_col and base_col in data.columns:
+        with st.sidebar:
+            st.markdown("---")
+            st.subheader("Lag Exploration")
+            selected_lag = st.slider(
+                "Indicator Lag (months)",
+                min_value=lag_config.get('min', -12),
+                max_value=lag_config.get('max', 12),
+                value=lag_config.get('default', 0),
+                help="Positive = indicator leads target by N months"
+            )
+            if selected_lag != 0:
+                lagged_col = f"{base_col}_lag{selected_lag}"
+                data[lagged_col] = data[base_col].shift(selected_lag)
+                indicator_col = lagged_col
+                st.caption(f"Using {base_col} shifted by {selected_lag} months")
+            else:
+                st.caption(f"Using {indicator_col} (no lag)")
+
     # Define regime based on selected method
     if regime_method == "Direction (Rising/Falling)":
         data['regime'] = define_regimes_direction(
