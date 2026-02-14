@@ -399,6 +399,24 @@ def combine_regimes(
 # Auto-initialize on import
 # =============================================================================
 
-# Ensure DB and tables exist
-if DB_PATH.parent.exists():
+def _ensure_seeded():
+    """Create tables and auto-seed if empty (supports Streamlit Cloud)."""
+    if not DB_PATH.parent.exists():
+        return
     init_db()
+    conn = get_connection()
+    try:
+        count = conn.execute("SELECT COUNT(*) FROM analyses").fetchone()[0]
+        if count == 0:
+            # DB exists but is empty — run seed script
+            import importlib.util
+            seed_path = PROJECT_ROOT / "script" / "seed_config_db.py"
+            if seed_path.exists():
+                spec = importlib.util.spec_from_file_location("seed_config_db", str(seed_path))
+                seed_module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(seed_module)
+                seed_module.main()
+    finally:
+        conn.close()
+
+_ensure_seeded()
