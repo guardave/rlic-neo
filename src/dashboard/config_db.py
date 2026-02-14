@@ -400,23 +400,20 @@ def combine_regimes(
 # =============================================================================
 
 def _ensure_seeded():
-    """Create tables and auto-seed if empty (supports Streamlit Cloud)."""
+    """Create tables and seed from seed script (supports Streamlit Cloud).
+
+    Always re-seeds to pick up any additions/removals in seed data.
+    The seed script is idempotent (DELETE + INSERT).
+    """
     if not DB_PATH.parent.exists():
         return
     init_db()
-    conn = get_connection()
-    try:
-        count = conn.execute("SELECT COUNT(*) FROM analyses").fetchone()[0]
-        if count == 0:
-            # DB exists but is empty — run seed script
-            import importlib.util
-            seed_path = PROJECT_ROOT / "script" / "seed_config_db.py"
-            if seed_path.exists():
-                spec = importlib.util.spec_from_file_location("seed_config_db", str(seed_path))
-                seed_module = importlib.util.module_from_spec(spec)
-                spec.loader.exec_module(seed_module)
-                seed_module.main()
-    finally:
-        conn.close()
+    import importlib.util
+    seed_path = PROJECT_ROOT / "script" / "seed_config_db.py"
+    if seed_path.exists():
+        spec = importlib.util.spec_from_file_location("seed_config_db", str(seed_path))
+        seed_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(seed_module)
+        seed_module.main()
 
 _ensure_seeded()

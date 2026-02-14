@@ -329,6 +329,8 @@ INDICATORS_SEED = [
 def seed_analyses(conn):
     """Insert or replace analyses rows."""
     cursor = conn.cursor()
+    # Clear existing to ensure removed analyses are purged
+    cursor.execute("DELETE FROM analyses")
     for a in ANALYSES_SEED:
         cursor.execute("""
             INSERT OR REPLACE INTO analyses
