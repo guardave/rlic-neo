@@ -60,6 +60,7 @@ data/*.db
 !data/xlre_newhomesales_full.parquet
 !data/xli_ism_mfg_full.parquet
 !data/xli_ism_svc_full.parquet
+!data/spy_hy_ig_spread_full.parquet
 *.log
 
 # Secrets
