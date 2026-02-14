@@ -65,7 +65,7 @@ def render_sidebar(current_page: str = None):
         selected = st.selectbox(
             "Focus Analysis",
             options=list(analyses.keys()),
-            format_func=lambda x: f":material/{analyses[x]['icon']}: {analyses[x]['name']}",
+            format_func=lambda x: f":material/{analyses[x]['icon']}: {analyses[x]['short']}",
             index=list(analyses.keys()).index(st.session_state.selected_analysis),
             key='global_analysis_selector',
             label_visibility="collapsed"
