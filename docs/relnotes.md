@@ -1,5 +1,50 @@
 # Release Notes - RLIC Enhancement Project
 
+## Session: 2026-02-14 (Dashboard Refactoring)
+
+### Major Refactoring: SQLite Config Database
+
+Replaced 64 hardcoded elif branches across 7 dashboard pages with a single SQLite-backed `resolve_columns()` function. Adding a new analysis now requires only a seed data entry — zero page modifications needed.
+
+#### Architecture Changes
+- **`src/dashboard/config_db.py`** — SQLite configuration database with `resolve_columns()`, `get_analysis_config()`, `get_indicator_config()`
+- **`script/seed_config_db.py`** — Idempotent seed script (DELETE + INSERT) for 8 analyses and 8 indicator configs
+- **Auto-seed on import** — `_ensure_seeded()` runs seed script on every import to handle Streamlit Cloud (no Docker build step)
+
+#### Column Detection Strategies (config-driven)
+- **Pattern-based**: `indicator_pattern` with pipe-separated regex (e.g., `'indpro|industrial'`)
+- **Exact-column**: `indicator_columns` with JSON list (e.g., `['ISM_Mfg_PMI_Level', 'ISM_Mfg_PMI_YoY']`)
+- **Filter-based**: `indicator_filter` with contains/and_contains rules
+- **Context-aware**: 'default' context for display pages, 'trading' for Regimes/Backtests (uses lagged columns)
+
+#### Other Changes
+- Dynamic lag slider on Regimes and Backtests pages (per-analysis `default_lag`, `lag_min`, `lag_max`)
+- Qualitative content extracted to `docs/qualitative/{analysis_id}.md` with admonition renderer
+- Removed Investment Clock Sectors analysis (8 analyses remaining)
+- Fixed Streamlit deprecation: `use_container_width` → `width='stretch'`, `applymap()` → `map()`
+- Sidebar dropdown: plain text names (no icon prefix)
+- Docker build updated: copies qualitative content + seed script, runs seed during build
+
+### Files Changed
+- Created: `src/dashboard/config_db.py`, `script/seed_config_db.py`
+- Modified: All 7 dashboard pages, `navigation.py`, `components.py`, `Home.py`, `data_loader.py`
+- Modified: `Dockerfile`, `docker-compose.dev.yml`, `.gitignore`
+- Created: `docs/qualitative/*.md` (7 files)
+- Deleted: `docs/qualitative/investment_clock.md`
+- Created: `docs/design_dashboard_refactoring.md`, `docs/implementation_plan_refactoring.md`
+
+### Lessons Learned
+
+1. **SQLite for Streamlit Cloud** — Zero-dependency config store; auto-seed at import time is the only reliable mechanism since there's no build step
+
+2. **DELETE + INSERT > INSERT OR REPLACE** — The latter doesn't remove stale rows when seed data changes (e.g., removing an analysis)
+
+3. **Always re-seed on startup** — Checking `count == 0` misses schema/data changes; idempotent DELETE + INSERT is cheap (~ms for 8 rows)
+
+4. **Streamlit deprecation tracking** — `use_container_width=True` deprecated in favor of `width='stretch'`; `applymap()` → `map()` in pandas Styler
+
+---
+
 ## Session: 2026-01-26 (SOP v1.2 - QA Review)
 
 ### SOP Quality Improvements

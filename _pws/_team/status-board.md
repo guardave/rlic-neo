@@ -1,5 +1,48 @@
 # Team Status Board
 
+## 2026-02-14 - Dev Claude (Checkpoint)
+
+**Status:** Completed - Dashboard Refactoring (SQLite Config DB)
+
+**Session Summary:**
+Major refactoring of dashboard from hardcoded elif chains to SQLite-driven configuration. Replaced 64 elif branches across 7 pages with a single `resolve_columns()` function. Added auto-seed mechanism for Streamlit Cloud deployment. Fixed multiple deployment and UX issues.
+
+**What was accomplished:**
+1. Created SQLite config database (`config_db.py`) with `resolve_columns()` — replaces all hardcoded column detection
+2. Created idempotent seed script (`seed_config_db.py`) with 8 analyses and 8 indicator configs
+3. Extracted qualitative content to markdown files with admonition renderer
+4. Added dynamic lag slider to Regimes and Backtests pages (per-analysis config)
+5. Updated Docker build (copies qualitative content + seed script, seeds during build)
+6. Fixed Streamlit deprecation warnings (`width='stretch'`, `map()`)
+7. Added auto-seed mechanism for Streamlit Cloud (re-seeds on every import)
+8. Fixed sidebar dropdown readability (plain text names)
+9. Removed Investment Clock Sectors analysis
+10. Fixed stale DB issue (DELETE + INSERT instead of INSERT OR REPLACE)
+
+**Key discoveries and insights:**
+- Streamlit Cloud has no Docker build step — DB must be created at runtime via auto-seed
+- `INSERT OR REPLACE` doesn't remove stale rows; use `DELETE` + `INSERT` for full sync
+- Always re-seed on startup (not just when empty) to pick up seed data changes
+- SQLite is ideal for Streamlit config: zero dependencies, works everywhere
+
+**Commits (10):**
+- `e5cdc62` Design doc for refactoring
+- `939e7ca` Implementation plan (20 tasks, 6 phases)
+- `8620cca` Static dashboard recovery guide
+- `d523613` config_db.py + seed script
+- `df23d36` Replace 64 elif chains with resolve_columns()
+- `5c9c3a2` Dynamic lag slider
+- `a2d4bd8` Qualitative content extraction
+- `16468bd` Docker build + deprecation fixes
+- `384a72f` Auto-seed for Streamlit Cloud
+- `d25404a`..`47962b5` Dropdown fixes + Investment Clock removal + stale DB fix
+
+**Outstanding work:**
+- Verify Investment Clock is gone from Streamlit Cloud after latest push
+- Dashboard now has 8 analyses (down from 9 after removing Investment Clock)
+
+---
+
 ## 2026-02-13 - RA Cheryl
 
 **Status:** Completed - ISM Manufacturing + Services PMI Analyses
