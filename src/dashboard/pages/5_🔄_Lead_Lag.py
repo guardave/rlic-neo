@@ -72,7 +72,7 @@ try:
 
     if not leadlag_results.empty:
         fig = plot_leadlag_bars(leadlag_results, title="Lead-Lag Cross-Correlation")
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
 
         # Optimal lag
         optimal = find_optimal_lag(leadlag_results)
@@ -132,11 +132,11 @@ try:
             granger_display.style.format({
                 'f_statistic': '{:.2f}',
                 'pvalue': '{:.4f}'
-            }).applymap(
+            }).map(
                 lambda x: 'background-color: #d4edda' if x else '',
                 subset=['significant']
             ),
-            use_container_width=True
+            width='stretch'
         )
 
         # Summary
@@ -157,7 +157,7 @@ try:
                     'correlation': '{:.4f}',
                     'pvalue': '{:.4f}'
                 }),
-                use_container_width=True
+                width='stretch'
             )
 
 except Exception as e:

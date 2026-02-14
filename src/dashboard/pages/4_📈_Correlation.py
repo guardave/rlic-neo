@@ -78,7 +78,7 @@ try:
     col1, col2 = st.columns([2, 1])
     with col1:
         fig_heatmap = plot_heatmap(corr_matrix, title="Correlation Heatmap")
-        st.plotly_chart(fig_heatmap, use_container_width=True)
+        st.plotly_chart(fig_heatmap, width='stretch')
 
     with col2:
         st.markdown("**Interpretation:**")
@@ -105,7 +105,7 @@ try:
         color_col=color_col,
         title=f"{x_choice} vs {return_col}"
     )
-    st.plotly_chart(fig_scatter, use_container_width=True)
+    st.plotly_chart(fig_scatter, width='stretch')
 
     # Correlation stats
     corr_stats = correlation_with_pvalues(data[x_choice], data[return_col])
@@ -126,7 +126,7 @@ try:
         rolling_corr,
         title=f"Rolling {rolling_window}-Month Correlation"
     )
-    st.plotly_chart(fig_rolling, use_container_width=True)
+    st.plotly_chart(fig_rolling, width='stretch')
 
     # Stats on rolling correlation
     if not rolling_corr.empty:

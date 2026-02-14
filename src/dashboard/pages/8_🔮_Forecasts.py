@@ -159,7 +159,7 @@ try:
         regime_col='regime',
         title=f"Recent {indicator_col} with Regime Background"
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
     # Outlook summary
     st.subheader("Outlook Summary")

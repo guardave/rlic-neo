@@ -12,7 +12,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application files
 COPY src/dashboard/ ./src/dashboard/
 COPY data/ ./data/
+COPY docs/qualitative/ ./docs/qualitative/
+COPY script/seed_config_db.py ./script/seed_config_db.py
 COPY .streamlit/ ./.streamlit/
+
+# Seed the configuration database
+RUN python script/seed_config_db.py
 
 # Expose Streamlit port
 EXPOSE 8501

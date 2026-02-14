@@ -160,7 +160,7 @@ try:
         benchmark_col='benchmark_cumulative',
         title="Cumulative Returns: Strategy vs Benchmark"
     )
-    st.plotly_chart(fig_equity, use_container_width=True)
+    st.plotly_chart(fig_equity, width='stretch')
 
     # Drawdown
     st.subheader("Drawdown")
@@ -168,11 +168,11 @@ try:
 
     with col1:
         fig_dd_strat = plot_drawdown(results, 'strategy_return', title="Strategy Drawdown")
-        st.plotly_chart(fig_dd_strat, use_container_width=True)
+        st.plotly_chart(fig_dd_strat, width='stretch')
 
     with col2:
         fig_dd_bench = plot_drawdown(results, 'benchmark_return', title="Benchmark Drawdown")
-        st.plotly_chart(fig_dd_bench, use_container_width=True)
+        st.plotly_chart(fig_dd_bench, width='stretch')
 
     # Position analysis
     st.subheader("Position Analysis")
@@ -214,11 +214,11 @@ try:
                 benchmark_metrics.get('n_periods', 0)
             ]
         })
-        st.dataframe(comparison, use_container_width=True)
+        st.dataframe(comparison, width='stretch')
 
     # Raw results
     with st.expander("📋 Raw Backtest Data"):
-        st.dataframe(results.tail(24), use_container_width=True)
+        st.dataframe(results.tail(24), width='stretch')
 
 except Exception as e:
     st.error(f"Error: {e}")

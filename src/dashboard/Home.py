@@ -52,7 +52,7 @@ for a in all_analyses:
 
             btn_label = "Currently Selected" if is_selected else "Select & Explore"
             if st.button(btn_label, key=f"btn_{a['id']}",
-                        use_container_width=True, disabled=is_selected):
+                        width='stretch', disabled=is_selected):
                 st.session_state.selected_analysis = a['id']
                 st.switch_page("pages/2_📊_Overview.py")
 

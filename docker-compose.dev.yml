@@ -9,6 +9,8 @@ services:
       - ./src/dashboard:/app/src/dashboard:ro
       # Mount data directory
       - ./data:/app/data:ro
+      # Mount qualitative content for hot-reload
+      - ./docs/qualitative:/app/docs/qualitative:ro
       # Mount cache directory (read-write for caching)
       - ./cache:/app/cache
     environment:

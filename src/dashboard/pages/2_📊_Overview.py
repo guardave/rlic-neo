@@ -93,12 +93,12 @@ try:
         y1_name=indicator_col,
         y2_name="Return"
     )
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
     # Regime timeline
     st.subheader("Regime History")
     fig_regime = plot_regime_timeline(data, 'regime', title="Regime Over Time")
-    st.plotly_chart(fig_regime, use_container_width=True)
+    st.plotly_chart(fig_regime, width='stretch')
 
     # Regime performance summary
     col1, col2 = st.columns(2)
@@ -113,7 +113,7 @@ try:
                     'sharpe_ratio': '{:.2f}',
                     'pct_positive': '{:.1%}'
                 }),
-                use_container_width=True
+                width='stretch'
             )
 
     with col2:
@@ -123,7 +123,7 @@ try:
 
     # Data preview
     with st.expander("📋 Raw Data Preview"):
-        st.dataframe(data.tail(20), use_container_width=True)
+        st.dataframe(data.tail(20), width='stretch')
 
 except Exception as e:
     st.error(f"Error loading analysis: {e}")

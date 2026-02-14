@@ -114,7 +114,7 @@ try:
     # Regime timeline
     st.subheader("Regime Timeline")
     fig_timeline = plot_regime_timeline(data, 'regime')
-    st.plotly_chart(fig_timeline, use_container_width=True)
+    st.plotly_chart(fig_timeline, width='stretch')
 
     # Performance by regime
     st.subheader("Performance by Regime")
@@ -129,14 +129,14 @@ try:
                 regime_perf, metric='mean_return',
                 title="Mean Monthly Return by Regime"
             )
-            st.plotly_chart(fig_returns, use_container_width=True)
+            st.plotly_chart(fig_returns, width='stretch')
 
         with col2:
             fig_sharpe = plot_regime_performance_bars(
                 regime_perf, metric='sharpe_ratio',
                 title="Sharpe Ratio by Regime"
             )
-            st.plotly_chart(fig_sharpe, use_container_width=True)
+            st.plotly_chart(fig_sharpe, width='stretch')
 
         # Return distribution
         st.subheader("Return Distribution by Regime")
@@ -144,7 +144,7 @@ try:
             data, 'regime', return_col,
             title="Monthly Returns by Regime"
         )
-        st.plotly_chart(fig_box, use_container_width=True)
+        st.plotly_chart(fig_box, width='stretch')
 
         # Performance table
         st.subheader("Detailed Performance Metrics")
@@ -160,7 +160,7 @@ try:
                 'Min Return': '{:.4f}',
                 'Max Return': '{:.4f}'
             }),
-            use_container_width=True
+            width='stretch'
         )
 
     # Transition matrix
@@ -178,7 +178,7 @@ try:
 
             st.dataframe(
                 trans_display.style.format('{:.1%}').background_gradient(cmap='Blues'),
-                use_container_width=True
+                width='stretch'
             )
         else:
             st.info("Not enough data to compute transition probabilities.")
