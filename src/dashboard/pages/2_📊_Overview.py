@@ -15,6 +15,7 @@ from src.dashboard.components import (
     render_regime_badge, format_pct, format_number, plot_regime_timeline
 )
 from src.dashboard.data_loader import load_analysis_data
+from src.dashboard.config_db import resolve_columns
 from src.dashboard.analysis_engine import (
     create_derivatives, get_current_regime, define_regimes_direction,
     regime_performance
@@ -38,95 +39,19 @@ try:
         st.error("No data available for this analysis.")
         st.stop()
 
-    # Identify columns based on analysis type
-    if analysis_id == 'investment_clock':
-        indicator_cols = [c for c in data.columns if 'orders_inv' in c.lower() or 'ppi' in c.lower()]
-        return_cols = [c for c in data.columns if c.endswith('_return')]
-        if not indicator_cols:
-            indicator_cols = ['orders_inv_ratio'] if 'orders_inv_ratio' in data.columns else [data.columns[0]]
-    elif analysis_id == 'spy_retailirsa':
-        indicator_cols = [c for c in data.columns if 'retail' in c.lower() and not c.endswith('_return')]
-        return_cols = [c for c in data.columns if c.endswith('_return')]
-        if not indicator_cols:
-            indicator_cols = [c for c in data.columns if c not in ['SPY', 'regime'] and not c.endswith('_return')]
-        if not return_cols and 'SPY' in data.columns:
-            data['SPY_return'] = data['SPY'].pct_change()
-            return_cols = ['SPY_return']
-    elif analysis_id == 'spy_indpro':
-        indicator_cols = [c for c in data.columns if 'indpro' in c.lower() or 'industrial' in c.lower()]
-        return_cols = [c for c in data.columns if c.endswith('_return')]
-        if not indicator_cols:
-            indicator_cols = [c for c in data.columns if c not in ['SPY', 'regime'] and not c.endswith('_return')]
-        if not return_cols and 'SPY' in data.columns:
-            data['SPY_return'] = data['SPY'].pct_change()
-            return_cols = ['SPY_return']
-    elif analysis_id == 'xlre_orders_inv':
-        indicator_cols = [c for c in data.columns if ('order' in c.lower() or 'oi' in c.lower()) and not c.endswith('_return')]
-        return_cols = [c for c in data.columns if c.endswith('_return')]
-        if not indicator_cols:
-            indicator_cols = [c for c in data.columns if c not in ['XLRE', 'regime'] and not c.endswith('_return')]
-        if not return_cols and 'XLRE' in data.columns:
-            data['XLRE_return'] = data['XLRE'].pct_change()
-            return_cols = ['XLRE_return']
-    elif analysis_id == 'xlp_retailirsa':
-        indicator_cols = [c for c in data.columns if 'retail' in c.lower() and not c.endswith('_return')]
-        return_cols = [c for c in data.columns if c.endswith('_return')]
-        if not indicator_cols:
-            indicator_cols = [c for c in data.columns if c not in ['XLP', 'regime'] and not c.endswith('_return')]
-        if not return_cols and 'XLP' in data.columns:
-            data['XLP_return'] = data['XLP'].pct_change()
-            return_cols = ['XLP_return']
-    elif analysis_id == 'xly_retailirsa':
-        indicator_cols = [c for c in data.columns if 'retail' in c.lower() and not c.endswith('_return')]
-        return_cols = [c for c in data.columns if c.endswith('_return')]
-        if not indicator_cols:
-            indicator_cols = [c for c in data.columns if c not in ['XLY', 'regime'] and not c.endswith('_return')]
-        if not return_cols and 'XLY' in data.columns:
-            data['XLY_return'] = data['XLY'].pct_change()
-            return_cols = ['XLY_return']
-    elif analysis_id == 'xlre_newhomesales':
-        indicator_cols = [c for c in data.columns if 'NewHomeSales' in c and 'Level' in c or 'YoY' in c]
-        return_cols = ['XLRE_Returns'] if 'XLRE_Returns' in data.columns else []
-        if not indicator_cols:
-            indicator_cols = ['NewHomeSales_YoY_Lagged'] if 'NewHomeSales_YoY_Lagged' in data.columns else ['NewHomeSales_Level']
-        if 'Regime' in data.columns and 'regime' not in data.columns:
-            data['regime'] = data['Regime']
-    elif analysis_id == 'xli_ism_mfg':
-        indicator_cols = [c for c in data.columns if 'ISM_Mfg_PMI' in c and ('Level' in c or 'YoY' in c)]
-        return_cols = ['XLI_Returns'] if 'XLI_Returns' in data.columns else []
-        if not indicator_cols:
-            indicator_cols = ['ISM_Mfg_PMI_Level'] if 'ISM_Mfg_PMI_Level' in data.columns else []
-        if 'Regime' in data.columns and 'regime' not in data.columns:
-            data['regime'] = data['Regime']
-    elif analysis_id == 'xli_ism_svc':
-        indicator_cols = [c for c in data.columns if 'ISM_Svc_PMI' in c and ('Level' in c or 'YoY' in c)]
-        return_cols = ['XLI_Returns'] if 'XLI_Returns' in data.columns else []
-        if not indicator_cols:
-            indicator_cols = ['ISM_Svc_PMI_Level'] if 'ISM_Svc_PMI_Level' in data.columns else []
-        if 'Regime' in data.columns and 'regime' not in data.columns:
-            data['regime'] = data['Regime']
-    else:
-        indicator_cols = [c for c in data.columns if not c.endswith('_return') and c != 'regime']
-        return_cols = [c for c in data.columns if c.endswith('_return')]
+    # Resolve columns from config database
+    resolved = resolve_columns(analysis_id, data)
+    data = resolved['data']
+    indicator_cols = resolved['indicator_cols']
+    return_cols = resolved['return_cols']
+    indicator_col = resolved['indicator_col']
+    return_col = resolved['return_col']
 
-    # Fallback if still empty
-    if not indicator_cols:
-        indicator_cols = [c for c in data.columns if not c.endswith('_return') and c != 'regime']
-    if not return_cols:
-        price_cols = [c for c in data.columns if c in ['SPY', 'XLRE', 'XLP', 'XLY', 'QQQ', 'IWM']]
-        if price_cols:
-            price_col = price_cols[0]
-            data[f'{price_col}_return'] = data[price_col].pct_change()
-            return_cols = [f'{price_col}_return']
-
-    if not indicator_cols or not return_cols:
+    if not indicator_col or not return_col:
         st.warning("Data structure not as expected.")
         st.write(f"Columns: {data.columns.tolist()}")
         st.dataframe(data.head())
         st.stop()
-
-    indicator_col = indicator_cols[0]
-    return_col = return_cols[0]
 
     # Create derivatives if not present
     if f"{indicator_col}_MoM" not in data.columns:

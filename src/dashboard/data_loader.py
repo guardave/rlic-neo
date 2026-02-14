@@ -565,66 +565,35 @@ def load_analysis_data(analysis_id: str, max_cache_age: int = 24) -> pd.DataFram
     """
     Load data for a specific analysis.
 
+    Reads the data file path from the SQLite config database.
+    Investment Clock has a specialized loader for sector returns merging.
+
     Args:
-        analysis_id: One of 'investment_clock', 'spy_retailirsa',
-                     'spy_indpro', 'xlre_orders_inv'
+        analysis_id: Analysis identifier (e.g., 'spy_retailirsa')
         max_cache_age: Cache expiry in hours
 
     Returns:
         DataFrame with analysis data
     """
-    # For investment_clock, always use the specialized loader that includes sector returns
+    # Investment Clock needs specialized loading (merges sector returns)
     if analysis_id == 'investment_clock':
         return load_investment_clock_data(max_cache_age=max_cache_age)
 
-    # For other analyses, check for existing parquet files in data/ directory
-    existing_files = {
-        'spy_retailirsa': 'spy_retail_inv_sales.parquet',
-        'spy_indpro': 'spy_ip_analysis.parquet',
-        'xlre_orders_inv': 'xlre_oi_analysis.parquet',
-        'xlp_retailirsa': 'xlp_retail_inv_sales.parquet',
-        'xly_retailirsa': 'xly_retail_inv_sales.parquet',
-        'xlre_newhomesales': 'xlre_newhomesales_full.parquet',
-        'xli_ism_mfg': 'xli_ism_mfg_full.parquet',
-        'xli_ism_svc': 'xli_ism_svc_full.parquet'
-    }
+    # Read data file path from SQLite config
+    from src.dashboard.config_db import get_analysis_config
+    config = get_analysis_config(analysis_id)
 
-    if analysis_id in existing_files:
-        data_path = DATA_DIR / existing_files[analysis_id]
+    if config and config.get('data_file'):
+        data_path = DATA_DIR / config['data_file']
         if data_path.exists():
-            logger.info(f"Loading {analysis_id} from existing data: {data_path}")
+            logger.info(f"Loading {analysis_id} from: {data_path}")
             data = pd.read_parquet(data_path)
-            # Ensure datetime index
             if not isinstance(data.index, pd.DatetimeIndex):
                 if 'date' in data.columns:
                     data.set_index('date', inplace=True)
             return data
 
-    # Fallback to fetching fresh data
-
-    elif analysis_id == 'spy_retailirsa':
-        return load_indicator_with_target('retail_inv_sales', 'SPY',
-                                          max_cache_age=max_cache_age)
-
-    elif analysis_id == 'spy_indpro':
-        return load_indicator_with_target('industrial_prod', 'SPY',
-                                          max_cache_age=max_cache_age)
-
-    elif analysis_id == 'xlre_orders_inv':
-        return load_indicator_with_target('orders_inv_ratio', 'XLRE',
-                                          start_date="2015-01-01",
-                                          max_cache_age=max_cache_age)
-
-    elif analysis_id == 'xlp_retailirsa':
-        return load_indicator_with_target('retail_inv_sales', 'XLP',
-                                          max_cache_age=max_cache_age)
-
-    elif analysis_id == 'xly_retailirsa':
-        return load_indicator_with_target('retail_inv_sales', 'XLY',
-                                          max_cache_age=max_cache_age)
-
-    else:
-        raise ValueError(f"Unknown analysis_id: {analysis_id}")
+    raise ValueError(f"Unknown analysis or missing data file: {analysis_id}")
 
 
 # For testing
