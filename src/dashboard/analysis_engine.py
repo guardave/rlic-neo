@@ -298,6 +298,154 @@ def is_stationary(series: pd.Series, significance: float = 0.05) -> bool:
         return False
 
 
+def granger_bidirectional(df: pd.DataFrame, x_col: str, y_col: str,
+                          max_lag: int = 6, alpha: float = 0.05) -> Dict:
+    """
+    Test Granger causality in both directions and classify relationship.
+
+    Args:
+        df: DataFrame with x_col and y_col
+        x_col: Indicator column
+        y_col: Target column
+        max_lag: Maximum lag to test
+        alpha: Significance level
+
+    Returns:
+        Dict with:
+            'forward': DataFrame (x→y results)
+            'reverse': DataFrame (y→x results)
+            'fwd_best': {'lag', 'f_stat', 'pvalue'}
+            'rev_best': {'lag', 'f_stat', 'pvalue'}
+            'direction': 'predictive'|'confirmatory'|'bi-directional'|'independent'
+    """
+    fwd = granger_causality_test(df, x_col, y_col, max_lag=max_lag)
+    rev = granger_causality_test(df, y_col, x_col, max_lag=max_lag)
+
+    def _best(results):
+        if results.empty:
+            return {'lag': None, 'f_stat': None, 'pvalue': 1.0}
+        idx = results['pvalue'].idxmin()
+        row = results.loc[idx]
+        return {'lag': int(row['lag']), 'f_stat': row['f_statistic'], 'pvalue': row['pvalue']}
+
+    fwd_best = _best(fwd)
+    rev_best = _best(rev)
+
+    fwd_sig = fwd_best['pvalue'] < alpha
+    rev_sig = rev_best['pvalue'] < alpha
+
+    if fwd_sig and not rev_sig:
+        direction = 'predictive'
+    elif not fwd_sig and rev_sig:
+        direction = 'confirmatory'
+    elif fwd_sig and rev_sig:
+        direction = 'bi-directional'
+    else:
+        direction = 'independent'
+
+    return {
+        'forward': fwd,
+        'reverse': rev,
+        'fwd_best': fwd_best,
+        'rev_best': rev_best,
+        'direction': direction,
+    }
+
+
+def identify_deepdive_lags(leadlag_results: pd.DataFrame,
+                            granger_fwd: pd.DataFrame = None,
+                            granger_rev: pd.DataFrame = None,
+                            top_n: int = 3) -> List[Dict]:
+    """
+    Identify lags worth deep-diving with scatter plots.
+
+    Selection criteria (priority order):
+    1. Optimal lag from cross-correlation (always included)
+    2. Granger-significant lags (if any, from either direction)
+    3. Top-N significant cross-correlation lags by |r|
+
+    Returns:
+        List of {lag, source, r, p} dicts, deduplicated by lag value.
+    """
+    candidates = {}
+
+    # 1. Optimal lag (always first)
+    if not leadlag_results.empty:
+        sig = leadlag_results[leadlag_results['pvalue'] < 0.05]
+        search = sig if not sig.empty else leadlag_results
+        idx = search['correlation'].abs().idxmax()
+        row = search.loc[idx]
+        candidates[int(row['lag'])] = {
+            'lag': int(row['lag']),
+            'source': 'optimal',
+            'r': row['correlation'],
+            'p': row['pvalue']
+        }
+
+    # 2. Granger-significant lags
+    for label, gresults in [('granger_fwd', granger_fwd), ('granger_rev', granger_rev)]:
+        if gresults is not None and not gresults.empty:
+            sig_g = gresults[gresults['pvalue'] < 0.05]
+            for _, grow in sig_g.iterrows():
+                lag_val = int(grow['lag'])
+                if label == 'granger_rev':
+                    lag_val = -lag_val  # Reverse direction
+                if lag_val not in candidates:
+                    # Find corresponding cross-correlation
+                    ll_match = leadlag_results[leadlag_results['lag'] == lag_val]
+                    r_val = ll_match['correlation'].iloc[0] if not ll_match.empty else None
+                    p_val = ll_match['pvalue'].iloc[0] if not ll_match.empty else None
+                    candidates[lag_val] = {
+                        'lag': lag_val,
+                        'source': label,
+                        'r': r_val,
+                        'p': p_val
+                    }
+
+    # 3. Top-N significant lags by |r|
+    if not leadlag_results.empty:
+        sig_ll = leadlag_results[leadlag_results['pvalue'] < 0.05].copy()
+        if not sig_ll.empty:
+            sig_ll['abs_r'] = sig_ll['correlation'].abs()
+            sig_ll = sig_ll.sort_values('abs_r', ascending=False)
+            for _, row in sig_ll.head(top_n).iterrows():
+                lag_val = int(row['lag'])
+                if lag_val not in candidates:
+                    candidates[lag_val] = {
+                        'lag': lag_val,
+                        'source': 'crosscorr',
+                        'r': row['correlation'],
+                        'p': row['pvalue']
+                    }
+
+    # Sort by |r| descending, cap at top_n
+    result = sorted(candidates.values(), key=lambda x: abs(x.get('r') or 0), reverse=True)
+    return result[:top_n]
+
+
+def lag_scatter_data(df: pd.DataFrame, x_col: str, y_col: str,
+                     lag: int) -> pd.DataFrame:
+    """
+    Create scatter-ready DataFrame at a specific lag.
+
+    Args:
+        df: DataFrame with x_col and y_col
+        x_col: Indicator column
+        y_col: Target column
+        lag: Lag value (positive = x leads y)
+
+    Returns:
+        DataFrame with 'x_lagged' and 'y' columns, NaN-dropped.
+    """
+    result = pd.DataFrame(index=df.index)
+    if lag != 0:
+        result['x_lagged'] = df[x_col].shift(lag)
+    else:
+        result['x_lagged'] = df[x_col]
+    result['y'] = df[y_col]
+    return result.dropna()
+
+
 # =============================================================================
 # Regime Definition
 # =============================================================================
