@@ -430,6 +430,19 @@ def apply_multiple_testing_correction(p_values, method='fdr_bh'):
 - r = 0.08, p = 0.001, n = 500 → "Statistically significant but trivial effect size. Not actionable."
 - r = 0.25, p = 0.02, n = 150 → "Moderate effect with significance. Proceed to causality testing."
 
+### 2.5 Standard Correlation Outputs (MANDATORY)
+
+Every analysis MUST compute and store:
+
+| Metric | Description | Storage |
+|--------|-------------|---------|
+| Level Pearson r | Indicator level vs target price/level | `analysis_results` |
+| Change Pearson r | Indicator MoM vs target returns | `analysis_results` |
+| Rolling correlation | 12-month rolling window stats | `analysis_results` |
+
+These are stored via `store_results_batch()` and rendered with auto-generated
+interpretations by the dashboard interpretation engine.
+
 ---
 
 ## Phase 3: Lead-Lag and Causality
@@ -536,6 +549,37 @@ def granger_test(df, x_col, y_col, max_lag=6):
 
     return pd.DataFrame(results)
 ```
+
+### 3.4 Bi-directional Granger Causality (MANDATORY)
+
+ALL analyses must test Granger causality in BOTH directions:
+
+1. **Forward**: Does indicator Granger-cause target?
+2. **Reverse**: Does target Granger-cause indicator?
+
+**Classification:**
+
+| Forward | Reverse | Classification | Meaning |
+|---------|---------|----------------|---------|
+| p < 0.05 | p >= 0.05 | Predictive | Indicator leads target |
+| p >= 0.05 | p < 0.05 | Confirmatory | Target moves first |
+| p < 0.05 | p < 0.05 | Bi-directional | Feedback loop |
+| p >= 0.05 | p >= 0.05 | Independent | No causal relationship |
+
+Use `granger_bidirectional()` from `analysis_engine.py`.
+
+### 3.5 Deep-Dive Lag Verification
+
+For the top 3 significant lags identified by cross-correlation or Granger:
+
+1. Create scatter plot at each lag
+2. Compute direct Pearson r at that lag
+3. If Granger significance contradicts simple Pearson, document the distinction:
+   - Granger measures *incremental* predictive power after accounting for
+     the target's own history
+   - Simple correlation measures the *isolated* relationship
+   - Both can be true: Granger-significant but weak Pearson means the signal
+     is useful in combination with other data, not in isolation
 
 ---
 
@@ -1518,7 +1562,23 @@ Every analysis report MUST follow this structure:
 ## Files Created
 ```
 
-### 7.2 File Naming Conventions
+### 7.2 Results Storage (MANDATORY)
+
+Every analysis MUST store structured results to the `analysis_results`
+DB table. Use `script/populate_results.py` or call `store_results_batch()`
+directly.
+
+Required results per analysis:
+- correlation: pearson_r_level, pearson_r_change, rolling_corr_mean/std/min/max
+- leadlag: optimal_lag, optimal_lag_r, significant_lags, deepdive_lags
+- granger: fwd_best_pvalue/lag/fstat, rev_best_pvalue/lag/fstat, direction
+- regime: perf_summary, t_test_pvalue
+
+Optional overrides:
+- Store custom interpretations via `analysis_annotations` table
+- Override any auto-generated text by populating the relevant section_key
+
+### 7.3 File Naming Conventions
 
 **Reports:**
 ```
