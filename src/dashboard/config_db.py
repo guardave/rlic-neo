@@ -82,6 +82,35 @@ def init_db():
 
     CREATE INDEX IF NOT EXISTS idx_analysis_indicators_analysis
         ON analysis_indicators(analysis_id, axis);
+
+    CREATE TABLE IF NOT EXISTS analysis_results (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        analysis_id TEXT NOT NULL,
+        section TEXT NOT NULL,
+        metric TEXT NOT NULL,
+        value REAL,
+        value_text TEXT,
+        metadata TEXT,
+        computed_at TEXT DEFAULT (datetime('now')),
+        FOREIGN KEY (analysis_id) REFERENCES analyses(id) ON DELETE CASCADE,
+        UNIQUE(analysis_id, section, metric)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_results_analysis_section
+        ON analysis_results(analysis_id, section);
+
+    CREATE TABLE IF NOT EXISTS analysis_annotations (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        analysis_id TEXT NOT NULL,
+        section_key TEXT NOT NULL,
+        intro TEXT,
+        finding TEXT,
+        interpretation TEXT,
+        verdict TEXT,
+        updated_at TEXT DEFAULT (datetime('now')),
+        FOREIGN KEY (analysis_id) REFERENCES analyses(id) ON DELETE CASCADE,
+        UNIQUE(analysis_id, section_key)
+    );
     """)
 
     conn.commit()
@@ -401,6 +430,118 @@ def _resolve_fallback(data: pd.DataFrame) -> Dict[str, Any]:
         'lag_config': {'base_col': None, 'default': 0, 'min': -12, 'max': 12},
         'data': data,
     }
+
+
+# =============================================================================
+# Analysis Results — Structured Quantitative Findings
+# =============================================================================
+
+def store_result(analysis_id: str, section: str, metric: str,
+                 value: float = None, value_text: str = None,
+                 metadata: Any = None):
+    """Store or update a single analysis result."""
+    conn = get_connection()
+    meta_json = json.dumps(metadata) if metadata is not None else None
+    conn.execute("""
+        INSERT OR REPLACE INTO analysis_results
+        (analysis_id, section, metric, value, value_text, metadata, computed_at)
+        VALUES (?, ?, ?, ?, ?, ?, datetime('now'))
+    """, (analysis_id, section, metric, value, value_text, meta_json))
+    conn.commit()
+    conn.close()
+
+
+def store_results_batch(analysis_id: str, results: List[Dict]):
+    """Store multiple results in one transaction.
+
+    Each dict: {section, metric, value?, value_text?, metadata?}
+    """
+    conn = get_connection()
+    cursor = conn.cursor()
+    for r in results:
+        meta_json = json.dumps(r.get('metadata')) if r.get('metadata') is not None else None
+        cursor.execute("""
+            INSERT OR REPLACE INTO analysis_results
+            (analysis_id, section, metric, value, value_text, metadata, computed_at)
+            VALUES (?, ?, ?, ?, ?, ?, datetime('now'))
+        """, (analysis_id, r['section'], r['metric'],
+              r.get('value'), r.get('value_text'), meta_json))
+    conn.commit()
+    conn.close()
+
+
+def get_results(analysis_id: str, section: str = None) -> List[Dict[str, Any]]:
+    """Get results for an analysis, optionally filtered by section."""
+    conn = get_connection()
+    if section:
+        cursor = conn.execute(
+            "SELECT * FROM analysis_results WHERE analysis_id = ? AND section = ?",
+            (analysis_id, section))
+    else:
+        cursor = conn.execute(
+            "SELECT * FROM analysis_results WHERE analysis_id = ?",
+            (analysis_id,))
+    results = []
+    for row in cursor.fetchall():
+        d = _row_to_dict(row)
+        if d.get('metadata'):
+            try:
+                d['metadata'] = json.loads(d['metadata'])
+            except (json.JSONDecodeError, TypeError):
+                pass
+        results.append(d)
+    conn.close()
+    return results
+
+
+def get_result(analysis_id: str, section: str, metric: str) -> Optional[Dict]:
+    """Get a single result value."""
+    conn = get_connection()
+    cursor = conn.execute(
+        "SELECT * FROM analysis_results WHERE analysis_id = ? AND section = ? AND metric = ?",
+        (analysis_id, section, metric))
+    row = cursor.fetchone()
+    conn.close()
+    if row is None:
+        return None
+    d = _row_to_dict(row)
+    if d.get('metadata'):
+        try:
+            d['metadata'] = json.loads(d['metadata'])
+        except (json.JSONDecodeError, TypeError):
+            pass
+    return d
+
+
+# =============================================================================
+# Analysis Annotations — Human Override Text
+# =============================================================================
+
+def get_annotation(analysis_id: str, section_key: str) -> Optional[Dict]:
+    """Get annotation override for a section."""
+    conn = get_connection()
+    cursor = conn.execute(
+        "SELECT * FROM analysis_annotations WHERE analysis_id = ? AND section_key = ?",
+        (analysis_id, section_key))
+    row = cursor.fetchone()
+    conn.close()
+    if row is None:
+        return None
+    return _row_to_dict(row)
+
+
+def store_annotation(analysis_id: str, section_key: str,
+                     intro: str = None, finding: str = None,
+                     interpretation: str = None, verdict: str = None):
+    """Store or update an annotation override."""
+    conn = get_connection()
+    conn.execute("""
+        INSERT OR REPLACE INTO analysis_annotations
+        (analysis_id, section_key, intro, finding, interpretation, verdict, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, datetime('now'))
+    """, (analysis_id, section_key, intro, finding, interpretation, verdict))
+    conn.commit()
+    conn.close()
 
 
 # =============================================================================
