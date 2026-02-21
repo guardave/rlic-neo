@@ -257,11 +257,15 @@ def resolve_columns(
         'max': config.get('lag_max', 12),
     }
 
+    # --- Price column (for level/trend charts) ---
+    price_col = _resolve_price_col(config, analysis, data)
+
     return {
         'indicator_cols': indicator_cols,
         'return_cols': return_cols,
         'indicator_col': indicator_cols[0] if indicator_cols else None,
         'return_col': return_cols[0] if return_cols else None,
+        'price_col': price_col,
         'regime_method': regime_method,
         'regime_config': regime_config,
         'lag_config': lag_config,
@@ -348,6 +352,35 @@ def _resolve_return_cols(
         return [analysis['target_return_col']]
 
     return []
+
+
+def _resolve_price_col(
+    config: Dict,
+    analysis: Dict,
+    data: pd.DataFrame
+) -> Optional[str]:
+    """Resolve the price/level column for the target asset.
+
+    Tries in order:
+      1. config['price_column'] (older analyses: 'SPY', 'XLRE', etc.)
+      2. '{target_ticker}_Level' (newer analyses: 'SPY_Level', 'XLI_Level')
+      3. target_ticker directly (fallback)
+    """
+    # Explicit price column from config
+    pc = config.get('price_column')
+    if pc and pc in data.columns:
+        return pc
+
+    # Newer naming: {ticker}_Level
+    ticker = analysis.get('target_ticker')
+    if ticker:
+        level_col = f'{ticker}_Level'
+        if level_col in data.columns:
+            return level_col
+        if ticker in data.columns:
+            return ticker
+
+    return None
 
 
 def _resolve_fallback(data: pd.DataFrame) -> Dict[str, Any]:

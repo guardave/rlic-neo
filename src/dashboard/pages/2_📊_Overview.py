@@ -83,15 +83,18 @@ try:
     ]
     render_kpi_row(metrics, columns=4)
 
-    # Main chart - dual axis
+    # Main chart - dual axis (indicator level vs price trend)
     st.subheader("Time Series")
+    price_col = resolved.get('price_col')
+    chart_y2 = price_col or return_col
+    chart_y2_name = price_col or "Return"
     fig = plot_dual_axis(
         data,
         y1_col=indicator_col,
-        y2_col=return_col,
-        title=f"{indicator_col} vs {return_col}",
+        y2_col=chart_y2,
+        title=f"{indicator_col} vs {chart_y2_name}",
         y1_name=indicator_col,
-        y2_name="Return"
+        y2_name=chart_y2_name
     )
     st.plotly_chart(fig, width='stretch')
 
