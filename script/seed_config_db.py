@@ -487,6 +487,21 @@ def main():
         print(f"  analyses: {n_analyses} rows")
         print(f"  analysis_indicators: {n_indicators} rows")
 
+        # Populate analysis results if missing
+        cursor = conn.execute("SELECT COUNT(*) FROM analysis_results")
+        n_results = cursor.fetchone()[0]
+        if n_results == 0:
+            print("\n  No analysis results found — populating...")
+            conn.close()
+            conn = None
+            import subprocess
+            populate_script = Path(__file__).parent / "populate_results.py"
+            if populate_script.exists():
+                subprocess.run([sys.executable, str(populate_script)], check=False)
+            conn = get_connection()
+        else:
+            print(f"  analysis_results: {n_results} rows (already populated)")
+
         # Show summary
         print(f"\nAnalyses:")
         cursor = conn.execute("SELECT id, name, analysis_type, data_file FROM analyses ORDER BY display_order")
