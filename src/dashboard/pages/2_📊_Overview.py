@@ -53,10 +53,16 @@ try:
         st.dataframe(data.head())
         st.stop()
 
-    # Create derivatives if not present
-    if f"{indicator_col}_MoM" not in data.columns:
-        derivs = create_derivatives(data[indicator_col], indicator_col)
-        data = data.join(derivs[[f"{indicator_col}_MoM"]])
+    # Derive stem name (strip _Level suffix if present) for derivative column naming
+    def _stem(col_name):
+        return col_name[:-6] if col_name.endswith('_Level') else col_name
+
+    # Ensure all derivatives exist for indicator (Level, MoM, QoQ, YoY)
+    ind_stem = _stem(indicator_col)
+    derivs = create_derivatives(data[indicator_col], ind_stem)
+    for c in derivs.columns:
+        if c not in data.columns:
+            data[c] = derivs[c]
 
     # Define regime if not present
     if 'regime' not in data.columns:
@@ -83,18 +89,43 @@ try:
     ]
     render_kpi_row(metrics, columns=4)
 
-    # Main chart - dual axis (indicator level vs price trend)
+    # Main chart - dual axis with derivative selectors
     st.subheader("Time Series")
     price_col = resolved.get('price_col')
-    chart_y2 = price_col or return_col
-    chart_y2_name = price_col or "Return"
+    chart_y2_base = price_col or return_col
+    tgt_stem = _stem(chart_y2_base)
+
+    # Ensure all derivatives exist for target (Level, MoM, QoQ, YoY)
+    derivs = create_derivatives(data[chart_y2_base], tgt_stem)
+    for c in derivs.columns:
+        if c not in data.columns:
+            data[c] = derivs[c]
+
+    # Derivative selector dropdowns
+    DERIV_OPTIONS = ["Level", "MoM", "QoQ", "YoY"]
+    sel1, sel2 = st.columns(2)
+    with sel1:
+        y1_deriv = st.selectbox("Indicator", DERIV_OPTIONS, index=0)
+    with sel2:
+        y2_deriv = st.selectbox("Target", DERIV_OPTIONS, index=0)
+
+    # Build column names using stem (e.g., CassShip_YoY, SPY_Level)
+    y1_col = f"{ind_stem}_{y1_deriv}"
+    y2_col = f"{tgt_stem}_{y2_deriv}"
+
+    # Fallback to base column if derivative not found
+    if y1_col not in data.columns:
+        y1_col = indicator_col
+    if y2_col not in data.columns:
+        y2_col = chart_y2_base
+
     fig = plot_dual_axis(
         data,
-        y1_col=indicator_col,
-        y2_col=chart_y2,
-        title=f"{indicator_col} vs {chart_y2_name}",
-        y1_name=indicator_col,
-        y2_name=chart_y2_name
+        y1_col=y1_col,
+        y2_col=y2_col,
+        title=f"{ind_stem} ({y1_deriv}) vs {tgt_stem} ({y2_deriv})",
+        y1_name=f"{ind_stem} {y1_deriv}",
+        y2_name=f"{tgt_stem} {y2_deriv}"
     )
     st.plotly_chart(fig, width='stretch')
 
