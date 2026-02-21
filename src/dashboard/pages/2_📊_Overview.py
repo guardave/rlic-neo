@@ -20,6 +20,8 @@ from src.dashboard.analysis_engine import (
     create_derivatives, get_current_regime, define_regimes_direction,
     regime_performance
 )
+from src.dashboard.interpretation import render_annotation
+from src.dashboard.components import plot_regime_boxplot
 
 st.set_page_config(page_title="Overview | RLIC", page_icon="📊", layout="wide")
 
@@ -52,6 +54,10 @@ try:
         st.write(f"Columns: {data.columns.tolist()}")
         st.dataframe(data.head())
         st.stop()
+
+    # Summary annotation (auto-generated or override)
+    render_annotation(analysis_id, 'overview.summary',
+                     indicator_name=indicator_col, target_name=return_col)
 
     # Derive stem name (strip _Level suffix if present) for derivative column naming
     def _stem(col_name):
@@ -151,9 +157,17 @@ try:
             )
 
     with col2:
-        st.subheader("Regime Distribution")
-        regime_counts = data['regime'].value_counts()
-        st.bar_chart(regime_counts)
+        st.subheader("Returns by Regime")
+        if 'regime' in data.columns:
+            fig_box = plot_regime_boxplot(
+                data, 'regime', return_col,
+                title="Return Distribution by Regime"
+            )
+            st.plotly_chart(fig_box, width='stretch')
+
+    # Regime interpretation
+    render_annotation(analysis_id, 'regime.performance',
+                     indicator_name=indicator_col, target_name=return_col)
 
     # Data preview
     with st.expander("📋 Raw Data Preview"):

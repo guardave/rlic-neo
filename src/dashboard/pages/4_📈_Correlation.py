@@ -19,6 +19,7 @@ from src.dashboard.analysis_engine import (
     create_derivatives, correlation_analysis, correlation_with_pvalues,
     rolling_correlation
 )
+from src.dashboard.interpretation import render_annotation
 
 st.set_page_config(page_title="Correlation | RLIC", page_icon="📈", layout="wide")
 
@@ -88,6 +89,10 @@ try:
             direction = "positive" if val > 0 else "negative"
             st.markdown(f"- **{idx}**: {format_number(val, 3)} ({strength} {direction})")
 
+    # Annotation: level correlation
+    render_annotation(analysis_id, 'correlation.level',
+                     indicator_name=indicator_col, target_name=return_col)
+
     # Scatter plot
     st.subheader("Scatter Plot")
     col1, col2 = st.columns(2)
@@ -114,6 +119,10 @@ try:
     stat_cols[1].metric("P-value", format_number(corr_stats['pvalue'], 4))
     stat_cols[2].metric("Observations", corr_stats['n_obs'])
 
+    # Annotation: change correlation
+    render_annotation(analysis_id, 'correlation.change',
+                     indicator_name=indicator_col, target_name=return_col)
+
     # Rolling correlation
     st.subheader("Rolling Correlation")
     st.markdown(f"Rolling {rolling_window}-month correlation over time.")
@@ -135,6 +144,10 @@ try:
         rcorr_cols[1].metric("Std Dev", format_number(rolling_corr.std(), 3))
         rcorr_cols[2].metric("Min", format_number(rolling_corr.min(), 3))
         rcorr_cols[3].metric("Max", format_number(rolling_corr.max(), 3))
+
+    # Annotation: rolling correlation
+    render_annotation(analysis_id, 'correlation.rolling',
+                     indicator_name=indicator_col, target_name=return_col)
 
 except Exception as e:
     st.error(f"Error: {e}")
