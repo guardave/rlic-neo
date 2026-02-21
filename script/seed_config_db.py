@@ -403,15 +403,24 @@ INDICATORS_SEED = [
 def seed_analyses(conn):
     """Insert or replace analyses rows."""
     cursor = conn.cursor()
-    # Clear existing to ensure removed analyses are purged
-    cursor.execute("DELETE FROM analyses")
+    # Purge removed analyses (only delete IDs not in seed data)
+    seed_ids = [a['id'] for a in ANALYSES_SEED]
+    placeholders = ','.join('?' * len(seed_ids))
+    cursor.execute(f"DELETE FROM analyses WHERE id NOT IN ({placeholders})", seed_ids)
     for a in ANALYSES_SEED:
         cursor.execute("""
-            INSERT OR REPLACE INTO analyses
+            INSERT INTO analyses
             (id, name, icon, short_name, description, caption, home_column,
              display_order, analysis_type, target_ticker, target_return_col,
              data_file, phase_labels)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(id) DO UPDATE SET
+                name=excluded.name, icon=excluded.icon, short_name=excluded.short_name,
+                description=excluded.description, caption=excluded.caption,
+                home_column=excluded.home_column, display_order=excluded.display_order,
+                analysis_type=excluded.analysis_type, target_ticker=excluded.target_ticker,
+                target_return_col=excluded.target_return_col, data_file=excluded.data_file,
+                phase_labels=excluded.phase_labels
         """, (
             a['id'], a['name'], a['icon'], a['short_name'], a['description'],
             a['caption'], a['home_column'], a['display_order'], a['analysis_type'],
@@ -425,8 +434,13 @@ def seed_analyses(conn):
 def seed_indicators(conn):
     """Insert or replace indicator config rows."""
     cursor = conn.cursor()
-    # Clear existing to avoid duplicates on re-run
-    cursor.execute("DELETE FROM analysis_indicators")
+    # Purge indicators for removed analyses only
+    seed_ids = [i['analysis_id'] for i in INDICATORS_SEED]
+    unique_ids = list(set(seed_ids))
+    placeholders = ','.join('?' * len(unique_ids))
+    cursor.execute(f"DELETE FROM analysis_indicators WHERE analysis_id NOT IN ({placeholders})", unique_ids)
+    # Clear and re-insert for seed analyses (indicators don't have stable IDs)
+    cursor.execute(f"DELETE FROM analysis_indicators WHERE analysis_id IN ({placeholders})", unique_ids)
     for i in INDICATORS_SEED:
         cursor.execute("""
             INSERT INTO analysis_indicators
