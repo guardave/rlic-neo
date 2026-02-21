@@ -573,12 +573,20 @@ def combine_regimes(
 # Auto-initialize on import
 # =============================================================================
 
+_seeded = False
+
 def _ensure_seeded():
     """Create tables and seed from seed script (supports Streamlit Cloud).
 
     Always re-seeds to pick up any additions/removals in seed data.
-    The seed script is idempotent (DELETE + INSERT).
+    The seed script is idempotent (ON CONFLICT DO UPDATE).
+    After seeding, populates analysis_results if empty (direct import, no subprocess).
     """
+    global _seeded
+    if _seeded:
+        return
+    _seeded = True
+
     if not DB_PATH.parent.exists():
         return
     init_db()
@@ -589,5 +597,20 @@ def _ensure_seeded():
         seed_module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(seed_module)
         seed_module.main()
+
+    # Populate analysis_results if empty (direct import, avoids subprocess recursion)
+    try:
+        conn = get_connection()
+        n_results = conn.execute("SELECT COUNT(*) FROM analysis_results").fetchone()[0]
+        conn.close()
+        if n_results == 0:
+            populate_path = PROJECT_ROOT / "script" / "populate_results.py"
+            if populate_path.exists():
+                spec = importlib.util.spec_from_file_location("populate_results", str(populate_path))
+                pop_module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(pop_module)
+                pop_module.main()
+    except Exception as e:
+        print(f"  Warning: could not auto-populate results: {e}")
 
 _ensure_seeded()
